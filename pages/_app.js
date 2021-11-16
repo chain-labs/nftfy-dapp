@@ -36,7 +36,8 @@ const MyApp = ({ Component, pageProps }) => {
 	return (
 		<>
 			<Head>
-				<title>ChainLabs</title>
+				<title>NFTfy</title>
+				<link href="https://api.fontshare.com/css?f[]=switzer@300,400,500,600,700,800&display=swap" rel="stylesheet"/>
 				<link rel="shortcut icon" href="/static/images/logo.png" />
 			</Head>
 			<ThemeProvider theme={theme}>
