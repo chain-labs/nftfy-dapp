@@ -66,7 +66,7 @@ const HomeComp = () => {
     payees: [],
     shares: [],
     nftify: "0xd18Cd50a6bDa288d331e3956BAC496AAbCa4960d",
-    nftifyShares: "15",
+    nftifyShares: ethers.utils.parseUnits("15", 16),
   });
 
   const [revealTime, setRevealTime] = useState("");
@@ -79,22 +79,83 @@ const HomeComp = () => {
   //   setFiles(e.target.files);
   // };
 
-  // useEffect(() => {
-  //   if (price.length) {
-  //     const wei = ethers.utils.parseUnits(price, 18);
-  //     console.log({ wei });
-  //   }
-  // }, [price]);
+  const handleCreate = async () => {
+    const shares = paymentSplit?.shares.map((share) => {
+      return ethers.utils.parseUnits(share, 16);
+    });
+
+    const jsonBody = {
+      collectionDetails: {
+        name: name,
+        symbol: symbol,
+        smallDescription: smalldescription,
+        bigDescription: bigDescription,
+        teamDescription: teamDescription,
+        valueProposition: valueProposition,
+        roadmap: roadmap,
+        team: team,
+        logoUrl: logoUrl,
+        bannerImageUrl: bannerImageUrl,
+        contactEmail: contactEmail,
+        socialLinks: socialLinks,
+        collectionUrl: collectionUrl,
+      },
+      tokenDetails: {
+        basic: {
+          name: tokenName,
+          symbol: tokenSymbol,
+          admin: adminAddress,
+          maximumTokens: maximumTokens,
+          maxPurchase: maxPurchase,
+          maxHolding: maxHolding,
+          price: ethers.utils.parseUnits(price, 18),
+          publicSaleStartTime: publicStartTime,
+          loadingURI: loadingUrl,
+        },
+        presale: {
+          presalePrice: ethers.utils.parseUnits(presalePrice, 18),
+          presaleStartTime: presaleStartTime,
+          presaleReservedTokens: presaleReservedTokens,
+          presaleMaxHolding: presaleMaxHolding,
+          presaleWhitelist: presaleWhitelistAll,
+        },
+        paymentSplitter: {
+          payees: paymentSplit.payees,
+          shares: shares,
+          nftify: paymentSplit.nftify,
+          nftifyShares: paymentSplit.nftifyShares,
+        },
+        revealable: {
+          revealAfterTimestamp: revealTime,
+          projectURIProvenance: ethers.utils.keccak256(
+            ethers.utils.defaultAbiCoder.encode(["string"], [projectUri])
+          ),
+        },
+        reservable: {
+          tokensToBeReserved: reservedTokens,
+        },
+      },
+    };
+    const res = await axios.post(
+      `${PINATA_URL}pinning/pinJSONToIPFS`,
+      jsonBody,
+      {
+        headers: {
+          pinata_api_key: PINATA_KEY,
+          pinata_secret_api_key: PINATA_KEY_SECRET,
+        },
+      }
+    );
+    console.log({ jsonBody, res });
+  };
 
   const onAdd = () => {
-    console.log({ selectInput });
 
     setSocialLinks([
       ...socialLinks,
       { socialMedia: selectInput, url: socialLink },
     ]);
     const newSocial = social.filter((el) => el != selectInput);
-    console.log({ newSocial });
     setSocialLink("");
 
     setSelectInput(newSocial[0]);
@@ -214,7 +275,6 @@ const HomeComp = () => {
                 py="1rem"
                 value={selectInput}
                 onChange={(e) => {
-                  console.log(e.target.value);
                   setSelectInput(e.target.value);
                 }}
                 mr="2rem"
@@ -385,52 +445,19 @@ const HomeComp = () => {
           data={reservedTokens}
           set={setReservedTokens}
         />
-        <LabelledInput
-          label="Receiver Address"
-          data={receiverAddress}
-          set={setReceiverAddress}
-        />
+        <Box
+          py="1rem"
+          borderRadius="4px"
+          px="3.2rem"
+          bg="primary-blue"
+          color="white"
+          cursor="pointer"
+          onClick={handleCreate}
+          // onClick={}
+        >
+          Create
+        </Box>
       </Box>
-      {/* <form>
-        <input type="text" placeholder="Enter name of project" />
-        <input type="text" placeholder="Enter project symbol" />
-        <input type="text" placeholder="Enter wallet address of admin" />
-        <input
-          type="text"
-          placeholder="Enter max number of tokens in collection"
-        />
-        <input
-          type="text"
-          placeholder="Enter max number of tokens that can be bought in a single transaction"
-        />
-        <input
-          type="text"
-          placeholder="Enter max number of tokens to be held by a single collector"
-        />
-        <input type="text" placeholder="Primary sale price" />
-        <input type="text" placeholder="Primary Sale Date" />
-        <input type="text" placeholder="Primary Sale Date" />
-        <input type="text" placeholder="Primary Sale Date" />
-        <input type="text" placeholder="Primary Sale Date" />
-        <input type="text" placeholder="Primary Sale Date" />
-        <input type="text" placeholder="Primary Sale Date" />
-        <input
-          onChange={handleChange}
-          type="file"
-          directory=""
-          mozdirectory=""
-          webkitdirectory=""
-        />
-        <button onClick={upload}>Upload</button>
-      </form>
-      <Box
-        bg="red"
-        height="10rem"
-        width="10rem"
-        css={`
-          border: 1px solid black;
-        `}
-      ></Box> */}
     </div>
   );
 };

@@ -1,3 +1,5 @@
+import { BigNumber } from "@ethersproject/bignumber";
+import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import Box from "src/components/Box";
 import LabelledInput from "src/components/LabelledInput";
@@ -7,7 +9,7 @@ export interface IPayment {
   payees: string[];
   shares: string[];
   nftify: string;
-  nftifyShares: string;
+  nftifyShares: BigNumber;
 }
 
 const PaymentSplit = ({
@@ -45,7 +47,6 @@ const PaymentSplit = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPercent(parseFloat(e.target.value));
-    console.log(parseFloat(e.target.value));
   };
   return (
     <React.Fragment>
@@ -56,7 +57,7 @@ const PaymentSplit = ({
         <Text fontSize="1.6rem" mr="1.2rem">
           NFTfy:
         </Text>
-        <Text fontSize="1.6rem">{paymentSplit?.nftifyShares}%</Text>
+        <Text fontSize="1.6rem">15%</Text>
       </Box>
       {paymentSplit?.payees?.map((payee, index) => (
         <Box key={index} row mb="2rem">
