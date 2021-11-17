@@ -13,20 +13,29 @@ export interface InputProps {
 const LabelledDateTime = ({ label, placeholder, set, data }: InputProps) => {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+
   const handleDateChange = (e) => {
     e.preventDefault();
-    console.log(new Date(e.target.value).getTime() / 1000);
     setDate(e.target.value);
   };
 
   const handleTimeChange = (e) => {
     e.preventDefault();
-    console.log(Date.parse(`${date} ${e.target.value}`));
     setTime(e.target.value);
   };
 
   useEffect(() => {
-    set(Date.parse(`${date} ${time} GMT+5:30`) / 1000);
+    console.log(
+      Date.parse(
+        `${date} ${time} GMT${new Date().toString().split("GMT")[1]}`
+      ) / 1000
+    );
+
+    set(
+      Date.parse(
+        `${date} ${time} GMT${new Date().toString().split("GMT")[1]}`
+      ) / 1000
+    );
   }, [date, time, set]);
 
   return (
