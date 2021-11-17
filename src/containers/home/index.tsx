@@ -74,10 +74,10 @@ const HomeComp = () => {
   const [reservedTokens, setReservedTokens] = useState("");
   const [receiverAddress, setReceiverAddress] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    setFiles(e.target.files);
-  };
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   e.preventDefault();
+  //   setFiles(e.target.files);
+  // };
 
   // useEffect(() => {
   //   if (price.length) {
@@ -101,33 +101,34 @@ const HomeComp = () => {
     setSocial(newSocial);
   };
 
-  const upload = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    for (let i = 0; i < files.length; i++) {
-      formData.append("file", files[i]);
-    }
+  // const upload = async (e) => {
+  //   e.preventDefault();
+  //   const formData = new FormData();
+  //   for (let i = 0; i < files.length; i++) {
+  //     formData.append("file", files[i]);
+  //   }
 
-    const metadata = JSON.stringify({
-      name: "test",
-    });
-    formData.append("metadata", metadata);
+  //   const metadata = JSON.stringify({
+  //     name: "test",
+  //   });
+  //   formData.append("metadata", metadata);
 
-    const res = await axios.post(
-      `${PINATA_URL}pinning/pinFileToIPFS`,
-      formData,
-      {
-        maxBodyLength: Infinity,
-        headers: {
-          "Content-Type": `multipart/form-data`,
-          pinata_api_key: PINATA_KEY,
-          pinata_secret_api_key: PINATA_KEY_SECRET,
-        },
-      }
-    );
+  //   const res = await axios.post(
+  //     `${PINATA_URL}pinning/pinFileToIPFS`,
+  //     formData,
+  //     {
+  //       maxBodyLength: Infinity,
+  //       headers: {
+  //         "Content-Type": `multipart/form-data`,
+  //         pinata_api_key: PINATA_KEY,
+  //         pinata_secret_api_key: PINATA_KEY_SECRET,
+  //       },
+  //     }
+  //   );
 
-    console.log({ res });
-  };
+  //   console.log({ res });
+  // };
+
   return (
     <div>
       <Box mx="8rem" my="4rem" fontSize="3.2rem">
