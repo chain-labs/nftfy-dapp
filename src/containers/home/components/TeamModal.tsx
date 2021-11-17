@@ -12,8 +12,16 @@ interface Props {
   setShowTeamModal: (showTeamModal: boolean) => void;
 }
 
+export enum SocialMedia {
+  "Twitter" = "Twitter",
+  "Facebook" = "Facebook",
+  "Discord" = "Discord",
+  "Instagram" = "Instagram",
+  "Linkedin" = "Linkedin",
+}
+
 export interface ISocialLinks {
-  socialMedia: "twitter" | "facebook" | "discord" | "instagram" | "linkedin";
+  socialMedia: SocialMedia;
   url: string;
 }
 
@@ -25,11 +33,11 @@ export interface ITeam {
 }
 
 const socialLinks: ISocialLinks[] = [
-  { socialMedia: "twitter", url: "" },
-  { socialMedia: "facebook", url: "" },
-  { socialMedia: "discord", url: "" },
-  { socialMedia: "instagram", url: "" },
-  { socialMedia: "linkedin", url: "" },
+  { socialMedia: SocialMedia.Twitter, url: "" },
+  { socialMedia: SocialMedia.Facebook, url: "" },
+  { socialMedia: SocialMedia.Discord, url: "" },
+  { socialMedia: SocialMedia.Instagram, url: "" },
+  { socialMedia: SocialMedia.Linkedin, url: "" },
 ];
 
 const TeamModal = ({ team, setTeam, setShowTeamModal }: Props) => {
@@ -48,19 +56,19 @@ const TeamModal = ({ team, setTeam, setShowTeamModal }: Props) => {
     document.querySelector("html").style.overflow = "scroll";
     const newSocial = [...social];
     if (twitter) {
-      newSocial.push({ socialMedia: "twitter", url: twitter });
+      newSocial.push({ socialMedia: SocialMedia.Twitter, url: twitter });
     }
     if (facebook) {
-      newSocial.push({ socialMedia: "facebook", url: facebook });
+      newSocial.push({ socialMedia: SocialMedia.Facebook, url: facebook });
     }
     if (discord) {
-      newSocial.push({ socialMedia: "discord", url: discord });
+      newSocial.push({ socialMedia: SocialMedia.Discord, url: discord });
     }
     if (instagram) {
-      newSocial.push({ socialMedia: "instagram", url: instagram });
+      newSocial.push({ socialMedia: SocialMedia.Instagram, url: instagram });
     }
     if (linkedin) {
-      newSocial.push({ socialMedia: "linkedin", url: linkedin });
+      newSocial.push({ socialMedia: SocialMedia.Linkedin, url: linkedin });
     }
 
     console.log(newSocial);

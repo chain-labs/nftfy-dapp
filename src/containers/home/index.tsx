@@ -5,13 +5,15 @@ import Box from "src/components/Box";
 import LabelledInput from "src/components/LabelledInput";
 import LabelledTextarea from "src/components/LabelledTextarea";
 import Text from "src/components/Text";
+import If from "src/components/If";
 import theme from "src/styleguide/theme";
 import { PINATA_KEY, PINATA_KEY_SECRET, PINATA_URL } from "src/utils/constants";
-import PaymentSplit from "./components/PaymentSplit";
+import PaymentSplit, { IPayment } from "./components/PaymentSplit";
 import Roadmap from "./components/Roadmap";
 import RoadmapModal, { IRoadmap } from "./components/RoadmapModal";
 import Team from "./components/Team";
-import { ITeam } from "./components/TeamModal";
+import { ISocialLinks, ITeam, SocialMedia } from "./components/TeamModal";
+import LabelledDateTime from "src/components/LabelledDateTime";
 
 const Divider = () => (
   <Box my="4rem" bg={`${theme.colors["secondary-black"]}20`} height="0.1rem" />
@@ -33,6 +35,17 @@ const HomeComp = () => {
   const [contactEmail, setContactEmail] = useState("");
   const [collectionUrl, setCollectionUrl] = useState("");
 
+  const [socialLinks, setSocialLinks] = useState<ISocialLinks[]>([]);
+  const [socialLink, setSocialLink] = useState("");
+  const [social, setSocial] = useState<SocialMedia[]>([
+    SocialMedia.Twitter,
+    SocialMedia.Facebook,
+    SocialMedia.Discord,
+    SocialMedia.Instagram,
+    SocialMedia.Linkedin,
+  ]);
+  const [selectInput, setSelectInput] = useState(social[0]);
+
   const [tokenName, setTokenName] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
   const [adminAddress, setAdminAddress] = useState("");
@@ -48,6 +61,14 @@ const HomeComp = () => {
   const [presaleMaxHolding, setPresaleMaxHolding] = useState("");
   const [presaleWhitelist, setPresaleWhitelist] = useState("");
   const [presaleWhitelistAll, setPresaleWhitelistAll] = useState([]);
+
+  const [paymentSplit, setPaymentSplit] = useState<IPayment>({
+    payees: [],
+    shares: [],
+    nftify: "0xd18Cd50a6bDa288d331e3956BAC496AAbCa4960d",
+    nftifyShares: "15",
+  });
+
   const [revealTime, setRevealTime] = useState("");
   const [projectUri, setProjectUri] = useState("");
   const [reservedTokens, setReservedTokens] = useState("");
@@ -55,10 +76,7 @@ const HomeComp = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    // console.log(e.target.dir);
     setFiles(e.target.files);
-
-    //   setSrc(e.target.value)
   };
 
   // useEffect(() => {
@@ -67,6 +85,21 @@ const HomeComp = () => {
   //     console.log({ wei });
   //   }
   // }, [price]);
+
+  const onAdd = () => {
+    console.log({ selectInput });
+
+    setSocialLinks([
+      ...socialLinks,
+      { socialMedia: selectInput, url: socialLink },
+    ]);
+    const newSocial = social.filter((el) => el != selectInput);
+    console.log({ newSocial });
+    setSocialLink("");
+
+    setSelectInput(newSocial[0]);
+    setSocial(newSocial);
+  };
 
   const upload = async (e) => {
     e.preventDefault();
@@ -97,7 +130,9 @@ const HomeComp = () => {
   };
   return (
     <div>
-      <h1>Admin Page</h1>
+      <Box mx="8rem" my="4rem" fontSize="3.2rem">
+        Admin Page
+      </Box>
       <Box
         boxShadow="0 0 1px rgba(68, 68, 68, 0.6);"
         borderRadius="12px"
@@ -165,6 +200,66 @@ const HomeComp = () => {
         />
         <Divider />
         <Text fontSize="2rem" mb="3.2rem">
+          Social Media Links
+        </Text>
+        <If
+          condition={!!social.length}
+          then={
+            <Box row alignItems="center">
+              <Box
+                as="select"
+                pl="0.4rem"
+                outline="none"
+                py="1rem"
+                value={selectInput}
+                onChange={(e) => {
+                  console.log(e.target.value);
+                  setSelectInput(e.target.value);
+                }}
+                mr="2rem"
+              >
+                {social.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </Box>
+              <LabelledInput
+                label="Enter Link:"
+                data={socialLink}
+                set={setSocialLink}
+              />
+              <Box
+                fontSize="1.6rem"
+                bg="primary-blue"
+                color="white"
+                py="1rem"
+                px="2.4rem"
+                borderRadius="4px"
+                cursor="pointer"
+                ml="2rem"
+                onClick={onAdd}
+              >
+                Add
+              </Box>
+            </Box>
+          }
+        />
+        {socialLinks.map((item: ISocialLinks) => (
+          <Box key={item.url} row alignItems="center">
+            <Text fontSize="1.4rem" fontWeight="bold" minWidth="10rem">
+              {item.socialMedia}:
+            </Text>
+            <Text fontSize="1.2rem">{item.url}</Text>
+          </Box>
+        ))}
+        {/* <LabelledInput label="Twitter" set={setTwitter} data={twitter} />
+        <LabelledInput label="Facebook" set={setFacebook} data={facebook} />
+        <LabelledInput label="Discord" set={setDiscord} data={discord} />
+        <LabelledInput label="Instagram" set={setInstagram} data={instagram} />
+        <LabelledInput label="Linkedin" set={setLinkedin} data={linkedin} /> */}
+        <Divider />
+        <Text fontSize="2rem" mb="3.2rem">
           Token Details
         </Text>
         <LabelledInput label="Token Name" set={setTokenName} data={tokenName} />
@@ -194,7 +289,7 @@ const HomeComp = () => {
           data={maxHolding}
         />
         <LabelledInput label="Price of Token" set={setPrice} data={price} />
-        <LabelledInput
+        <LabelledDateTime
           label="Public Sale Start Time"
           set={setPublicStartTime}
           data={publicStartTime}
@@ -213,10 +308,10 @@ const HomeComp = () => {
           set={setPresalePrice}
           data={presalePrice}
         />
-        <LabelledInput
+        <LabelledDateTime
           label="Presale Start Time"
-          set={setPresaleStartTime}
           data={presaleStartTime}
+          set={setPresaleStartTime}
         />
         <LabelledInput
           label="Number of Presale Reserved Tokens"
@@ -262,12 +357,15 @@ const HomeComp = () => {
           </Box>
         ))}
         <Divider />
-        <PaymentSplit />
+        <PaymentSplit
+          paymentSplit={paymentSplit}
+          setPaymentSplit={setPaymentSplit}
+        />
         <Divider />
         <Text color="grey" fontSize="1.6rem" mb="3.2rem">
           REVEALABLES
         </Text>
-        <LabelledInput
+        <LabelledDateTime
           label="Reveal Time"
           data={revealTime}
           set={setRevealTime}
