@@ -541,19 +541,22 @@ const HomeComp = () => {
             </Text>
             <Text fontSize="1.8rem">Project URL</Text>
             <a
-              href={`https://${
-                process.browser && window?.location.host
-              }/project/${contractAddress}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              href={`${process.browser && window.location.protocol}//
+              ${process.browser && window?.location.host}/project/
+              ${contractAddress}`}
             >
               <Text fontSize="1.6rem" textDecoration="underline" mb="4rem">
-                https://{process.browser && window?.location.host}/project/
-                {contractAddress}
+                {`${process.browser && window.location.protocol}//
+                ${process.browser && window?.location.host}/project/
+                ${contractAddress}`}
               </Text>
             </a>
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href={`https://${
+              href={`${process.browser && window.location.protocol}//${
                 process.browser && window?.location.host
               }/admin/${contractAddress}`}
             >
