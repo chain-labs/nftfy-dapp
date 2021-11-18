@@ -9,3 +9,9 @@ module.exports = withTM({
 		return config;
 	},
 });
+
+module.exports = {
+    images: {
+        domains: ['images.unsplash.com'],
+    },
+}

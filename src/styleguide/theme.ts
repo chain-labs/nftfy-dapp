@@ -1,7 +1,15 @@
-import { DefaultTheme } from 'styled-components';
+import { DefaultTheme } from "styled-components";
 
 //Breakpoints
-const breakpoints: DefaultTheme['breakpoints'] = ['319px', '410px', '767px', '1025px', '1199px', '1440px', '1600px'];
+const breakpoints: DefaultTheme["breakpoints"] = [
+  "319px",
+  "410px",
+  "767px",
+  "1025px",
+  "1199px",
+  "1440px",
+  "1600px",
+];
 
 breakpoints.mobS = breakpoints[0]; // 319px
 breakpoints.mobL = breakpoints[1]; // 424px
@@ -12,23 +20,23 @@ breakpoints.deskM = breakpoints[5]; //1440px
 breakpoints.deskL = breakpoints[6]; //1600px
 
 //Spacing
-const space: DefaultTheme['space'] = [
-	'0',
-	'0.4rem',
-	'0.8rem',
-	'1.2rem',
-	'1.6rem',
-	'2rem',
-	'2.4rem',
-	'2.8rem',
-	'3.2rem',
-	'4rem',
-	'4.8rem',
-	'5.6rem',
-	'6.4rem',
-	'8rem',
-	'10rem',
-	'12rem',
+const space: DefaultTheme["space"] = [
+  "0",
+  "0.4rem",
+  "0.8rem",
+  "1.2rem",
+  "1.6rem",
+  "2rem",
+  "2.4rem",
+  "2.8rem",
+  "3.2rem",
+  "4rem",
+  "4.8rem",
+  "5.6rem",
+  "6.4rem",
+  "8rem",
+  "10rem",
+  "12rem",
 ];
 
 space.mxxs = space[1]; //4px
@@ -59,9 +67,9 @@ const colors: DefaultTheme['colors'] = {
 };
 
 const theme: DefaultTheme = {
-	space,
-	breakpoints,
-	colors,
+  space,
+  breakpoints,
+  colors,
 };
 
 export default theme;
