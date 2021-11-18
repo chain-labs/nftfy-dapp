@@ -64,6 +64,7 @@ const HomeComp = () => {
   const [presaleMaxHolding, setPresaleMaxHolding] = useState("");
   const [presaleWhitelist, setPresaleWhitelist] = useState("");
   const [presaleWhitelistAll, setPresaleWhitelistAll] = useState([]);
+  const [upfrontFee, setUpfrontFee] = useState({});
 
   const [paymentSplit, setPaymentSplit] = useState<IPayment>({
     payees: [],
@@ -87,6 +88,7 @@ const HomeComp = () => {
       const nftfyShares = ethers.utils.formatUnits(nftfySharesBN, 16);
       const upfrontFee = await CollectionFactory.callStatic.upfrontFee();
       const upfrontFeeInETH = ethers.utils.formatUnits(upfrontFee, 18);
+      setUpfrontFee(upfrontFee);
       // console.log({ nftfyAddress, nftfyShares, upfrontFeeInETH });
     };
     if (CollectionFactory) {
@@ -173,8 +175,10 @@ const HomeComp = () => {
       jsonBody.tokenDetails.presale, // _presaleable
       jsonBody.tokenDetails.paymentSplitter, // _paymentSplitter
       jsonBody.tokenDetails.revealable, // _revealable
-      res.data.IpfsHash // _metadata
+      res.data.IpfsHash, // _metadata
+      {value: upfrontFee.toString()}
     );
+    console.log(await transaction.wait());
     console.log({ jsonBody, res, transaction });
   };
 
