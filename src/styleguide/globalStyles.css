@@ -28,6 +28,8 @@ div {
 	font-family: 'Switzer', sans-serif;
 	box-sizing: border-box;
 	scroll-behavior: smooth;
+	margin: 0;
+	padding: 0;
 }
 
 /* Chrome, Safari, Edge, Opera */
