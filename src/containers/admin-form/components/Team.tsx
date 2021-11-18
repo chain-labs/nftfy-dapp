@@ -12,7 +12,6 @@ const Team = ({
   setTeam?: (ITeam) => void;
 }) => {
   const [showTeamModal, setShowTeamModal] = useState(false);
-  console.log(team);
 
   return (
     <Box row>

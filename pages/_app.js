@@ -3,6 +3,8 @@ import { debounce } from 'lodash';
 import Head from 'next/head';
 
 import theme from 'styleguide/theme';
+import { StatesProvider } from 'src/components/StatesContext'
+import Navbar from 'src/components/Navbar';
 
 import 'styleguide/globalStyles.css';
 import { ThemeProvider } from 'styled-components';
@@ -40,9 +42,12 @@ const MyApp = ({ Component, pageProps }) => {
 				<link href="https://api.fontshare.com/css?f[]=switzer@300,400,500,600,700,800&display=swap" rel="stylesheet"/>
 				<link rel="shortcut icon" href="/static/images/logo.png" />
 			</Head>
-			<ThemeProvider theme={theme}>
-				<Component {...pageProps} />
-			</ThemeProvider>
+			<StatesProvider>
+				<ThemeProvider theme={theme}>
+					<Navbar />
+					<Component {...pageProps} />
+				</ThemeProvider>
+			</StatesProvider>
 		</>
 	);
 };

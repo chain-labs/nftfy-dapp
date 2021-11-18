@@ -50,7 +50,6 @@ const TeamModal = ({ team, setTeam, setShowTeamModal }: Props) => {
   const [discord, setDiscord] = useState("");
   const [instagram, setInstagram] = useState("");
   const [linkedin, setLinkedin] = useState("");
-  console.log(social);
 
   const onSave = () => {
     document.querySelector("html").style.overflow = "scroll";
@@ -70,8 +69,6 @@ const TeamModal = ({ team, setTeam, setShowTeamModal }: Props) => {
     if (linkedin) {
       newSocial.push({ socialMedia: SocialMedia.Linkedin, url: linkedin });
     }
-
-    console.log(newSocial);
 
     const newTeam = [
       ...team,
