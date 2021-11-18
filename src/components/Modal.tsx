@@ -18,6 +18,7 @@ const Modal = ({ children }) => {
       width="100vw"
       overflowY="scroll"
       pb="15rem"
+      zIndex={15}
     >
       <Box
         // height="50rem"
