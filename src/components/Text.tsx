@@ -37,6 +37,7 @@ export interface TextProps extends BoxProps {
 	id?: string;
 	dangerouslySetInnerHTML?: { __html: string };
 	onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+	className?: string;
 }
 
 const Text = ({ as = 'h6', fontWeight = 'regular', color, children, ...restProps }: TextProps): JSX.Element => {
@@ -46,6 +47,7 @@ const Text = ({ as = 'h6', fontWeight = 'regular', color, children, ...restProps
 
 	return (
 		<Box
+			className={restProps.className}
 			margin={0}
 			padding={0}
 			as={as}
