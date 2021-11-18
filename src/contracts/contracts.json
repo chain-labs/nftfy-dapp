@@ -5,7 +5,7 @@
       "chainId": "4",
       "contracts": {
         "Collection": {
-          "address": "0x2013B3843f9d18d51fC76AAcFCa0d8C35aDC150D",
+          "address": "0xCA06320A923dD7490B16195210618CC69725df63",
           "abi": [
             {
               "anonymous": false,
@@ -995,12 +995,38 @@
             {
               "inputs": [
                 {
+                  "internalType": "uint256",
+                  "name": "_newPresaleStartTime",
+                  "type": "uint256"
+                }
+              ],
+              "name": "setPresaleStartTime",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
                   "internalType": "string",
                   "name": "_projectURI",
                   "type": "string"
                 }
               ],
               "name": "setProjectURI",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "_newPublicSaleStartTime",
+                  "type": "uint256"
+                }
+              ],
+              "name": "setPublicSaleStartTime",
               "outputs": [],
               "stateMutability": "nonpayable",
               "type": "function"
@@ -1385,7 +1411,7 @@
           ]
         },
         "CollectionFactory": {
-          "address": "0x128C4dAC4E9c327959B2A56a428705d4E88CF32C",
+          "address": "0xafdDAe29Ceafc017374858994c007336e5D423ef",
           "abi": [
             {
               "inputs": [
