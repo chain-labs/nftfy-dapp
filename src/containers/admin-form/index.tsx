@@ -16,6 +16,7 @@ import { ISocialLinks, ITeam, SocialMedia } from "./components/TeamModal";
 import LabelledDateTime from "src/components/LabelledDateTime";
 import useListeners from "src/ethereum/useListeners";
 import { StatesContext } from "src/components/StatesContext";
+import useContract from "src/ethereum/useContracts";
 
 const Divider = () => (
   <Box my="4rem" bg={`${theme.colors["secondary-black"]}20`} height="0.1rem" />
@@ -74,7 +75,24 @@ const HomeComp = () => {
   const [revealTime, setRevealTime] = useState("");
   const [projectUri, setProjectUri] = useState("");
   const [reservedTokens, setReservedTokens] = useState("");
-  const [receiverAddress, setReceiverAddress] = useState("");
+
+  const state = useContext(StatesContext);
+
+  const CollectionFactory = useContract("CollectionFactory", state.provider);
+
+  useEffect(() => {
+    const getContractInfo = async () => {
+      const nftfyAddress = await CollectionFactory.callStatic.nftify();
+      const nftfySharesBN = await CollectionFactory.callStatic.nftifyShares();
+      const nftfyShares = ethers.utils.formatUnits(nftfySharesBN, 16);
+      const upfrontFee = await CollectionFactory.callStatic.upfrontFee();
+      const upfrontFeeInETH = ethers.utils.formatUnits(upfrontFee, 18);
+      // console.log({ nftfyAddress, nftfyShares, upfrontFeeInETH });
+    };
+    if (CollectionFactory) {
+      getContractInfo();
+    }
+  }, [CollectionFactory]);
 
   // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   //   e.preventDefault();
@@ -148,7 +166,16 @@ const HomeComp = () => {
         },
       }
     );
-    console.log({ jsonBody, res });
+    const transaction = await CollectionFactory.connect(
+      state.signer
+    ).createProject(
+      jsonBody.tokenDetails.basic, // _basicCollection
+      jsonBody.tokenDetails.presale, // _presaleable
+      jsonBody.tokenDetails.paymentSplitter, // _paymentSplitter
+      jsonBody.tokenDetails.revealable, // _revealable
+      res.data.IpfsHash // _metadata
+    );
+    console.log({ jsonBody, res, transaction });
   };
 
   const onAdd = () => {
@@ -191,13 +218,10 @@ const HomeComp = () => {
   //   console.log({ res });
   // };
 
-  const state = useContext(StatesContext);
-
   return (
     <div>
       <Box mx="8rem" my="4rem" fontSize="3.2rem" row between maxWidth="50rem">
         Admin Page
-        
       </Box>
       <Box
         boxShadow="0 0 1px rgba(68, 68, 68, 0.6);"

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Box from "components/Box";
 import Container from "components/Container";
 import Text from "components/Text";
@@ -7,15 +7,19 @@ import { gsap } from "gsap";
 import useEthers from "src/ethereum/useEthers";
 import useListeners from "src/ethereum/useListeners";
 import useSigner from "src/ethereum/useSigner";
+import { StatesContext } from "./StatesContext";
 
 const Navbar = () => {
   const [provider, setProvider, ethers, requestAccount] = useEthers();
   const [signer, setSigner] = useSigner(provider);
   const [address, setAddress] = useState<string>("");
+  const state = useContext(StatesContext);
 
   useListeners(provider, setProvider, setSigner);
 
   useEffect(() => {
+    state.setProvider(provider);
+    state.setSigner(signer);
     const getAddress = async () => {
       try {
         const address = await signer?.getAddress();
