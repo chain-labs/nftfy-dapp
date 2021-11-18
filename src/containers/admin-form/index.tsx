@@ -543,20 +543,24 @@ const HomeComp = () => {
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href={`${process.browser && window.location.protocol}//
-              ${process.browser && window?.location.host}/project/
-              ${contractAddress}`}
+              href={String.raw`${
+                process.browser && window.location.protocol
+              }//${
+                process.browser && window?.location.host
+              }/project/${contractAddress}`}
             >
               <Text fontSize="1.6rem" textDecoration="underline" mb="4rem">
-                {`${process.browser && window.location.protocol}//
-                ${process.browser && window?.location.host}/project/
-                ${contractAddress}`}
+                {String.raw`${process.browser && window.location.protocol}//${
+                  process.browser && window?.location.host
+                }/project/${contractAddress}`}
               </Text>
             </a>
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href={`${process.browser && window.location.protocol}//${
+              href={String.raw`${
+                process.browser && window.location.protocol
+              }//${
                 process.browser && window?.location.host
               }/admin/${contractAddress}`}
             >
