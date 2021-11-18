@@ -543,9 +543,9 @@ const HomeComp = () => {
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href={`${process.browser && window.location.protocol}//
-              ${process.browser && window?.location.host}/project/
-              ${contractAddress}`}
+              href={`${process.browser && window.location.protocol}//${
+                process.browser && window?.location.host
+              }/project/${contractAddress}`}
             >
               <Text fontSize="1.6rem" textDecoration="underline" mb="4rem">
                 {`${process.browser && window.location.protocol}//
