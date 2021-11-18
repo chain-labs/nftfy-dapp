@@ -5,7 +5,7 @@
       "chainId": "4",
       "contracts": {
         "Collection": {
-          "address": "0xAc517052b3EF33a6718dF503776e6D70aCDeBe8D",
+          "address": "0x2013B3843f9d18d51fC76AAcFCa0d8C35aDC150D",
           "abi": [
             {
               "anonymous": false,
@@ -560,6 +560,13 @@
             },
             {
               "inputs": [],
+              "name": "pause",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
               "name": "paused",
               "outputs": [
                 {
@@ -1001,19 +1008,6 @@
             {
               "inputs": [
                 {
-                  "internalType": "bytes32",
-                  "name": "_provenance",
-                  "type": "bytes32"
-                }
-              ],
-              "name": "setProvenance",
-              "outputs": [],
-              "stateMutability": "nonpayable",
-              "type": "function"
-            },
-            {
-              "inputs": [
-                {
                   "internalType": "uint256",
                   "name": "_revealAfterTimestamp",
                   "type": "uint256"
@@ -1370,6 +1364,13 @@
             },
             {
               "inputs": [],
+              "name": "unpause",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
               "name": "whitelistCount",
               "outputs": [
                 {
@@ -1384,7 +1385,7 @@
           ]
         },
         "CollectionFactory": {
-          "address": "0x225aDebC7E1D457815291b6B7819ea2745C11946",
+          "address": "0x128C4dAC4E9c327959B2A56a428705d4E88CF32C",
           "abi": [
             {
               "inputs": [
@@ -1401,6 +1402,11 @@
                 {
                   "internalType": "uint256",
                   "name": "_nftifyShares",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "_upfrontFee",
                   "type": "uint256"
                 }
               ],
@@ -1443,6 +1449,32 @@
                 }
               ],
               "name": "OwnershipTransferred",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": false,
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                }
+              ],
+              "name": "Paused",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": false,
+                  "internalType": "address",
+                  "name": "account",
+                  "type": "address"
+                }
+              ],
+              "name": "Unpaused",
               "type": "event"
             },
             {
@@ -1583,7 +1615,7 @@
               ],
               "name": "createProject",
               "outputs": [],
-              "stateMutability": "nonpayable",
+              "stateMutability": "payable",
               "type": "function"
             },
             {
@@ -1640,6 +1672,26 @@
             },
             {
               "inputs": [],
+              "name": "pause",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "paused",
+              "outputs": [
+                {
+                  "internalType": "bool",
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
               "name": "renounceOwnership",
               "outputs": [],
               "stateMutability": "nonpayable",
@@ -1687,12 +1739,71 @@
             {
               "inputs": [
                 {
+                  "internalType": "uint256",
+                  "name": "_upfrontFee",
+                  "type": "uint256"
+                }
+              ],
+              "name": "setUpfrontFee",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "totalWithdrawn",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
                   "internalType": "address",
                   "name": "newOwner",
                   "type": "address"
                 }
               ],
               "name": "transferOwnership",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "unpause",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "upfrontFee",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "_value",
+                  "type": "uint256"
+                }
+              ],
+              "name": "withdraw",
               "outputs": [],
               "stateMutability": "nonpayable",
               "type": "function"
