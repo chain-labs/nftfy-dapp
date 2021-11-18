@@ -28,18 +28,11 @@ const LabelledDateTime = ({ label, placeholder, set, data }: InputProps) => {
   };
 
   useEffect(() => {
-    console.log({ timezone });
     setTimezone(timezone);
 
     // @ts-ignore
     const label = timezone?.label?.split(" ")[0];
 
-    const finalTime = `${date} ${time} ${
-      label?.substring(1, label.length - 1) ??
-      `GMT${new Date().toString().split("GMT")[1]}`
-    }`;
-
-    console.log({ label, finalTime, data });
     set(
       Date.parse(
         `${date} ${time} ${

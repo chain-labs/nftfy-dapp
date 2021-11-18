@@ -17,6 +17,7 @@ import LabelledDateTime from "src/components/LabelledDateTime";
 import useListeners from "src/ethereum/useListeners";
 import { StatesContext } from "src/components/StatesContext";
 import useContract from "src/ethereum/useContracts";
+import Modal from "src/components/Modal";
 
 const Divider = () => (
   <Box my="4rem" bg={`${theme.colors["secondary-black"]}20`} height="0.1rem" />
@@ -77,6 +78,14 @@ const HomeComp = () => {
   const [projectUri, setProjectUri] = useState("");
   const [reservedTokens, setReservedTokens] = useState("");
 
+  const [isCreated, setIsCreated] = useState(false);
+
+  const [contractAddress, setContractAddress] = useState("");
+
+  const [metadataCID, setMetadataCID] = useState("");
+
+  const [isLoading, setIsLoading] = useState(false);
+
   const state = useContext(StatesContext);
 
   const CollectionFactory = useContract("CollectionFactory", state.provider);
@@ -89,7 +98,6 @@ const HomeComp = () => {
       const upfrontFee = await CollectionFactory.callStatic.upfrontFee();
       const upfrontFeeInETH = ethers.utils.formatUnits(upfrontFee, 18);
       setUpfrontFee(upfrontFee);
-      // console.log({ nftfyAddress, nftfyShares, upfrontFeeInETH });
     };
     if (CollectionFactory) {
       getContractInfo();
@@ -101,7 +109,16 @@ const HomeComp = () => {
   //   setFiles(e.target.files);
   // };
 
+  useEffect(() => {
+    if (contractAddress.length > 0) {
+      // console.log({ contractAddress });
+      setIsCreated(true);
+    }
+  }, [contractAddress]);
+
   const handleCreate = async () => {
+    setIsLoading(true);
+
     const shares = paymentSplit?.shares.map((share) => {
       return ethers.utils.parseUnits(share, 16);
     });
@@ -176,10 +193,15 @@ const HomeComp = () => {
       jsonBody.tokenDetails.paymentSplitter, // _paymentSplitter
       jsonBody.tokenDetails.revealable, // _revealable
       res.data.IpfsHash, // _metadata
-      {value: upfrontFee.toString()}
+      { value: upfrontFee.toString() }
     );
-    console.log(await transaction.wait());
-    console.log({ jsonBody, res, transaction });
+    const event = (await transaction.wait())?.events?.filter(
+      (event) => event.event == "CollectionCreated"
+    )[0]?.args;
+    setMetadataCID(res.data.IpfsHash);
+    setContractAddress(event?.project);
+
+    // console.log({ jsonBody, res, event });
   };
 
   const onAdd = () => {
@@ -381,7 +403,11 @@ const HomeComp = () => {
           set={setMaxHolding}
           data={maxHolding}
         />
-        <LabelledInput label="Price of Token" set={setPrice} data={price} />
+        <LabelledInput
+          label="Price of Token(in ETH)"
+          set={setPrice}
+          data={price}
+        />
         <LabelledDateTime
           label="Public Sale Start Time"
           set={setPublicStartTime}
@@ -397,7 +423,7 @@ const HomeComp = () => {
           Presale
         </Text>
         <LabelledInput
-          label="Presale Price"
+          label="Presale Price(in ETH)"
           set={setPresalePrice}
           data={presalePrice}
         />
@@ -481,15 +507,80 @@ const HomeComp = () => {
           py="1rem"
           borderRadius="4px"
           px="3.2rem"
-          bg="primary-blue"
+          bg={isCreated ? "primary-green" : "primary-blue"}
           color="white"
           cursor="pointer"
-          onClick={handleCreate}
-          // onClick={}
+          onClick={isLoading ? null : handleCreate}
         >
-          Create
+          {isLoading
+            ? isCreated
+              ? "Success"
+              : "Transaction is processing..."
+            : "Create"}
         </Box>
       </Box>
+      <If
+        condition={isCreated}
+        then={
+          <Modal>
+            <Box column fontSize="3.2rem" mb="4rem">
+              Thank you for choosing NFTfy!
+              <Text fontSize="1.6rem">
+                Your contract has been created and deployed.
+              </Text>
+            </Box>
+            <Text fontSize="1.8rem">Metadata URL:</Text>
+            <a href={`ipfs://${metadataCID}`}>
+              <Text fontSize="1.6rem" mb="1rem" textDecoration="underline">
+                ipfs://{metadataCID}
+              </Text>
+            </a>
+            <Text fontSize="1.8rem">Contract Address:</Text>
+            <Text fontSize="1.6rem" mb="1rem">
+              {contractAddress}
+            </Text>
+            <Text fontSize="1.8rem">Project URL</Text>
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href={String.raw`${
+                process.browser && window.location.protocol
+              }//${
+                process.browser && window?.location.host
+              }/project/${contractAddress}`}
+            >
+              <Text fontSize="1.6rem" textDecoration="underline" mb="4rem">
+                {String.raw`${process.browser && window.location.protocol}//${
+                  process.browser && window?.location.host
+                }/project/${contractAddress}`}
+              </Text>
+            </a>
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href={String.raw`${
+                process.browser && window.location.protocol
+              }//${
+                process.browser && window?.location.host
+              }/admin/${contractAddress}`}
+            >
+              <Box row justifyContent="center">
+                <Box
+                  fontSize="1.8rem"
+                  px="2rem"
+                  py="1rem"
+                  bg="primary-green"
+                  borderRadius="4px"
+                  cursor="pointer"
+                >
+                  Go to Dashboard
+                </Box>
+              </Box>
+            </a>
+            {/* <Box onClick={() => setIsCreated(false)}>Close</Box> */}
+          </Modal>
+        }
+      />
     </div>
   );
 };
