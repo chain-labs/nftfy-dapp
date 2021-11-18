@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ethers } from "ethers";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Box from "src/components/Box";
 import LabelledInput from "src/components/LabelledInput";
 import LabelledTextarea from "src/components/LabelledTextarea";
@@ -14,6 +14,8 @@ import RoadmapModal, { IRoadmap } from "./components/RoadmapModal";
 import Team from "./components/Team";
 import { ISocialLinks, ITeam, SocialMedia } from "./components/TeamModal";
 import LabelledDateTime from "src/components/LabelledDateTime";
+import useListeners from "src/ethereum/useListeners";
+import { StatesContext } from "src/components/StatesContext";
 
 const Divider = () => (
   <Box my="4rem" bg={`${theme.colors["secondary-black"]}20`} height="0.1rem" />
@@ -150,7 +152,6 @@ const HomeComp = () => {
   };
 
   const onAdd = () => {
-
     setSocialLinks([
       ...socialLinks,
       { socialMedia: selectInput, url: socialLink },
@@ -190,10 +191,13 @@ const HomeComp = () => {
   //   console.log({ res });
   // };
 
+  const state = useContext(StatesContext);
+
   return (
     <div>
-      <Box mx="8rem" my="4rem" fontSize="3.2rem">
+      <Box mx="8rem" my="4rem" fontSize="3.2rem" row between maxWidth="50rem">
         Admin Page
+        
       </Box>
       <Box
         boxShadow="0 0 1px rgba(68, 68, 68, 0.6);"
