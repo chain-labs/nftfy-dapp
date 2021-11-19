@@ -1,15 +1,36 @@
+import axios from "axios";
 import Box from "src/components/Box";
 import Image from "next/image";
 import Text from "src/components/Text";
 import { useEffect, useState } from "react";
+import { BigNumber } from "ethers";
+import { formatUnits } from "@ethersproject/units";
 
 // import { introAnimation, scrollBannerAnimation } from "./animations";
 
 const ProjPageComp = () => {
   const data = require('src/json/metadata.json')
   const [noOfTokens, setNoOfTokens] = useState<Number>()
+  const [metaData, setMetaData] = useState<Object>()
+  const fetchMetadata = async()=>{
+    const res = await axios.get("https://nftfy.mypinata.cloud/ipfs/Qmc63mtnfi3pdqKSUcfoUpfKxEPnPCLNPpnRgwfjqnzjMV")
+    // console.log(JSON.parse(res.data))
+    console.log(res.data)
+    setMetaData(res.data)
+  }
+  const buyNft = async() =>{
+    console.log(noOfTokens)
+    const bigNo = BigNumber.from(metaData?.tokenDetails.basic.price).mul(BigNumber.from(noOfTokens))
+    console.log(BigNumber.from(metaData?.tokenDetails.basic.price).mul(BigNumber.from(noOfTokens)).toString())
+    const ethNo = formatUnits(bigNo,18)
+    console.log(ethNo)
+  }
 
-  
+  useEffect(() => {
+    fetchMetadata()
+    // if(metaData)
+    // console.log(metaData.collectionDetails.name)
+  }, [])  
   return (
     <Box>
       {/* <-------------BANNER BACKGROUND----------------> */}
@@ -110,18 +131,18 @@ const ProjPageComp = () => {
           textTransform="uppercase"
           textAlign="center"
         >
-          {data.collectionDetails.name}
+          {/* {metaData?.collectionDetails?.name} */}
         </Text>
         <Box center>
 
         <Box as="input"
-        // value={noOfTokens}
+        value={`${noOfTokens}`}
         type="number"
         mb="mxxl"
         mr="mxxl"
         px="4.8rem"
         py="1rem"
-        // onChange={(e)=>setNoOfTokens(e.target.value)}
+        onChange={(e)=>setNoOfTokens(e.target.value)}
         >
         </Box>
         <Box
@@ -132,6 +153,7 @@ const ProjPageComp = () => {
           borderRadius="4px"
           cursor="pointer"
           className="cta-btn"
+          onClick={buyNft}
         >
           <Text fontSize="2rem" color="black-20" fontWeight="extra-bold">
             Let's Begin
