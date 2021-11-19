@@ -23,14 +23,15 @@ export const lineHeights = {
 const fontWeights = {
 	'extra-bold': 800,
 	bold: 700,
-	medium: 600,
-	regular: 500,
-	thin: 400,
+	"semi-bold": 600,
+	medium: 500,
+	regular:400,
+	thin: 300,
 };
 
 export interface TextProps extends BoxProps {
 	as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'b1' | 'b2' | 'b3' | 'links';
-	fontWeight?: 'extra-bold' | 'bold' | 'medium' | 'regular' | 'thin';
+	fontWeight?: 'extra-bold' | 'bold' | 'semi-bold' | 'medium' | 'regular' | 'thin';
 	lineHeight?: 'h1' | 'h2' | 'h4' | 'b2';
 
 	children?: string | React.ReactNode;

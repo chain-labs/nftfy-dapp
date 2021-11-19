@@ -55,6 +55,7 @@ const colors: DefaultTheme['colors'] = {
 	'accent-green': '#04FFA4',
 	'primary-white': '#E6E7E8',
 	'primary-red': '#E91C1C',
+	'primary-blue': '#3B89D6',
 };
 
 const theme: DefaultTheme = {
