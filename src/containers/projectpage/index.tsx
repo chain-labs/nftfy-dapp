@@ -10,6 +10,7 @@ const ProjPageComp = () => {
 	const data = require("src/json/metadata.json");
 	const [noOfTokens, setNoOfTokens] = useState<Number>();
 	const [metaData, setMetaData] = useState<Object>();
+  const [price, setPrice] = useState<Number>(0.0);
 
 	const fetchMetadata = async () => {
 		const res = await axios.get(
@@ -28,7 +29,8 @@ const ProjPageComp = () => {
     //@ts-expect-error
 		console.log(BigNumber.from(metaData?.tokenDetails.basic.price).mul(BigNumber.from(noOfTokens)).toString())
 		const ethNo = formatUnits(bigNo,18)
-		console.log(ethNo)
+		console.log(typeof parseFloat(ethNo))
+    setPrice(parseFloat(ethNo))
 	};
 
 	useEffect(() => {
@@ -141,6 +143,18 @@ const ProjPageComp = () => {
 							Let's Begin
 						</Text>
 					</Box>
+          {/* <Box
+						bg="yellow-10"
+						px="4.8rem"
+						py="2rem"
+						borderRadius="4px"
+						cursor="pointer"
+						className="cta-btn"
+					>
+						<Text fontSize="2rem" color="black-20" fontWeight="extra-bold">
+							Let's Begin
+						</Text>
+					</Box> */}
 				</Box>
 			</Box>
 			{/* <-------------BANNER BACKGROUND ENDS----------------> */}
@@ -165,7 +179,9 @@ const ProjPageComp = () => {
 							maxWidth="50rem"
 							fontWeight="thin"
 						>
-							{data.collectionDetails.valueProposition}
+							{
+              //@ts-expect-error
+              metaData?.collectionDetails?.valueProposition}
 						</Text>
 					</Box>
 					<Box ml="8rem">
@@ -177,9 +193,7 @@ const ProjPageComp = () => {
 						/>
 					</Box>
 				</Box>
-
 				{/* <------------------ REPETITVE CONTENT TO BE DELETED LATER ------------------> */}
-
 				<Box display="flex" pt="20rem" center pl="20rem" pr="15rem">
 					<Box mt="2rem">
 						<Text
