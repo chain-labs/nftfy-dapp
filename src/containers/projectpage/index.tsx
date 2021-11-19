@@ -6,8 +6,6 @@ import { useEffect, useState } from "react";
 import { BigNumber } from "ethers";
 import { formatUnits } from "@ethersproject/units";
 
-// import { introAnimation, scrollBannerAnimation } from "./animations";
-
 const ProjPageComp = () => {
   const data = require('src/json/metadata.json')
   const [noOfTokens, setNoOfTokens] = useState<Number>()
