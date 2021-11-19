@@ -6,36 +6,166 @@ import { useEffect, useState } from "react";
 import { BigNumber } from "ethers";
 import { formatUnits } from "@ethersproject/units";
 
+// import { introAnimation, scrollBannerAnimation } from "./animations";
+
 const ProjPageComp = () => {
-	const data = require("src/json/metadata.json");
-	const [noOfTokens, setNoOfTokens] = useState<Number>();
-	const [metaData, setMetaData] = useState<Object>();
-  const [price, setPrice] = useState<Number>(0.0);
+  const data = require('src/json/metadata.json')
+  const [noOfTokens, setNoOfTokens] = useState<Number>()
+  const [metaData, setMetaData] = useState<any>()
+  const fetchMetadata = async()=>{
+    const res = await axios.get("https://nftfy.mypinata.cloud/ipfs/Qmc63mtnfi3pdqKSUcfoUpfKxEPnPCLNPpnRgwfjqnzjMV")
+    // console.log(JSON.parse(res.data))
+    console.log(res.data)
+    setMetaData(res.data)
+  }
+  const buyNft = async() =>{
+    console.log(noOfTokens)
+    const bigNo = BigNumber.from(metaData?.tokenDetails.basic.price).mul(BigNumber.from(noOfTokens))
+    console.log(BigNumber.from(metaData?.tokenDetails.basic.price).mul(BigNumber.from(noOfTokens)).toString())
+    const ethNo = formatUnits(bigNo,18)
+    console.log(ethNo)
+  }
 
-	const fetchMetadata = async () => {
-		const res = await axios.get(
-			"https://nftfy.mypinata.cloud/ipfs/Qmc63mtnfi3pdqKSUcfoUpfKxEPnPCLNPpnRgwfjqnzjMV"
-		);
-		console.log(typeof res.data);
-		setMetaData(res.data);
-	};
+  useEffect(() => {
+    fetchMetadata()
+    // if(metaData)
+    // console.log(metaData.collectionDetails.name)
+  }, [])  
+//   return (
+//     <Box>
+//       {/* <-------------BANNER BACKGROUND----------------> */}
+//       {/* <Box
+//         height="100vh"
+//         width="100vw"
+//         bg="blue-10"
+//         zIndex={10}
+//         className="overlay"
+//         position="absolute"
+//         top="0"
+//       ></Box> */}
+//       <Box
+//         width="100vw"
+//         height="100vh"
+//         // position="fixed"
+//         top={{ mobS: 0, tabS: -10 }}
+//         zIndex={-1}
+//         className="banner"
+//       >
+//         <Image
+//           src={data.collectionDetails.bannerImageUrl}
+//           alt="banner"
+//           height="9"
+//           width="16"
+//           layout="responsive"
+//           quality={1}
+//           priority
+//         //   onLoadingComplete={introAnimation}
+//         ></Image>
+//         {/* <Box
+//           bg="black-10"
+//           opacity="50%"
+//           height="120vh"
+//           width="100vw"
+//         //   position="absolute"
+//         //   top="0"
+//           left="0"
+//         ></Box> */}
+//       </Box>
+//       <Box
+//         position="absolute"
+//         top="10"
 
-	const buyNft = async () => {
-		console.log(noOfTokens);
-		//@ts-expect-error
-		console.log(metaData.collectionDetails.name);
-    //@ts-expect-error
-		const bigNo = BigNumber.from(metaData?.tokenDetails.basic.price).mul(BigNumber.from(noOfTokens))
-    //@ts-expect-error
-		console.log(BigNumber.from(metaData?.tokenDetails.basic.price).mul(BigNumber.from(noOfTokens)).toString())
-		const ethNo = formatUnits(bigNo,18)
-		console.log(typeof parseFloat(ethNo))
-    setPrice(parseFloat(ethNo))
-	};
+//         left="50%"
+//         transform="translateX(-50%)"
+//         row
+//         center
+//       >
+//         <Box row>
+//           <Text fontSize="2rem" color="white-10" mr="4rem">
+//             About
+//           </Text>
+//           <Text fontSize="2rem" color="white-10" mr="4rem">
+//             Gallery
+//           </Text>
+//           <Text fontSize="2rem" color="white-10" mr="4rem">
+//             Roadmap
+//           </Text>
+//         </Box>
+//         <Box
+//           borderRadius="50%"
+//           height="8rem"
+//           width="8rem"
+//           position="relative"
+//           overflow="hidden"
+//         >
+//           <Image src="/static/images/logo.jpeg" layout="fill" />
+//         </Box>
+//         <Box row ml="4rem">
+//           <Text fontSize="2rem" color="white-10" mr="4rem">
+//             About
+//           </Text>
+//           <Text fontSize="2rem" color="white-10" mr="4rem">
+//             Gallery
+//           </Text>
+//           <Text fontSize="2rem" color="white-10">
+//             Roadmap
+//           </Text>
+//         </Box>
+//       </Box>
+//       <Box
+//         position="absolute"
+//         top="30%"
+//         left="50%"
+//         transform="translateX(-50%)"
+//         column
+//         center
+//         minWidth="70%"
+//         zIndex={3}
+//       >
+//         <Text
+//           id="headline"
+//           color="white"
+//           fontSize={{ mobS: "3.6rem", tabS: "7.2rem" }}
+//           fontWeight="extra-bold"
+//           mb="20rem"
+//           textTransform="uppercase"
+//           textAlign="center"
+//         >
+//           {/* {metaData?.collectionDetails?.name} */}
+//         </Text>
+//         <Box center>
 
-	useEffect(() => {
-		fetchMetadata();
-	}, []);
+//         <Box as="input"
+//         value={`${noOfTokens}`}
+//         type="number"
+//         mb="mxxl"
+//         mr="mxxl"
+//         px="4.8rem"
+//         py="1rem"
+//         onChange={(e)=>setNoOfTokens(e.target.value)}
+//         >
+//         </Box>
+//         <Box
+//           bg="yellow-10"
+//         //   zIndex={2}
+//           px="4.8rem"
+//           py="2rem"
+//           borderRadius="4px"
+//           cursor="pointer"
+//           className="cta-btn"
+//           onClick={buyNft}
+//         >
+//           <Text fontSize="2rem" color="black-20" fontWeight="extra-bold">
+//             Let's Begin
+//           </Text>
+//         </Box>
+//         </Box>
+//       </Box>
+//       {/* <-------------BANNER BACKGROUND ENDS----------------> */}
+
+// 	useEffect(() => {
+// 		fetchMetadata();
+// 	}, []);
 
 	return (
 		<Box>
@@ -116,7 +246,6 @@ const ProjPageComp = () => {
 					textAlign="center"
 				>
 					{
-          //@ts-expect-error
           metaData?.collectionDetails?.name}
 				</Text>
 				<Box center>
@@ -180,7 +309,6 @@ const ProjPageComp = () => {
 							fontWeight="thin"
 						>
 							{
-              //@ts-expect-error
               metaData?.collectionDetails?.valueProposition}
 						</Text>
 					</Box>
