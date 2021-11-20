@@ -172,17 +172,14 @@ const ProjPageComp = () => {
 				width="100vw"
 				height="100vh"
 				top={{ mobS: 0, tabS: -10 }}
-				className="banner"
 			>
-				<Image
+				<Box
+					as="img"
 					src={data.collectionDetails.bannerImageUrl}
-					alt="banner"
-					height="9"
-					width="16"
-					layout="responsive"
-					quality={1}
-					priority
-				></Image>
+					height="100vh"
+					width="100vw"
+					position="relative"
+				></Box>
 			</Box>
 			<Box
 				position="absolute"
@@ -246,7 +243,7 @@ const ProjPageComp = () => {
 					{
           metaData?.collectionDetails?.name}
 				</Text>
-				<Box center>
+				<Box center bg="purple-black" padding="mxl">
 					<Box
 						as="input"
 						value={`${noOfTokens}`}
@@ -258,36 +255,65 @@ const ProjPageComp = () => {
 						onChange={(e) => setNoOfTokens(e.target.value)}
 					></Box>
 					<Box
-						bg="yellow-10"
+						bg="accent-green"
 						px="4.8rem"
 						py="2rem"
 						borderRadius="4px"
 						cursor="pointer"
 						className="cta-btn"
 						onClick={buyNft}
+						mr="mxxl"
 					>
 						<Text fontSize="2rem" color="black-20" fontWeight="extra-bold">
 							Let's Begin
 						</Text>
 					</Box>
-          {/* <Box
-						bg="yellow-10"
-						px="4.8rem"
-						py="2rem"
-						borderRadius="4px"
-						cursor="pointer"
-						className="cta-btn"
-					>
-						<Text fontSize="2rem" color="black-20" fontWeight="extra-bold">
-							Let's Begin
-						</Text>
-					</Box> */}
+					{/* {price ? (
+						<Box bg="primary-blue" px="4.8rem" py="2rem" borderRadius="4px">
+							<Text fontSize="2rem" color="black-20" fontWeight="extra-bold">
+								{price} ETH
+							</Text>
+						</Box>
+					) : (
+						""
+					)} */}
 				</Box>
 			</Box>
 			{/* <-------------BANNER BACKGROUND ENDS----------------> */}
 
 			{/* <------------- WEBSITE BODY STARTS HERE ----------------> */}
-			<Box color="white" className="body" bg="blue-10">
+			<Box color="white" className="body" bg="purple-black">
+				<Box display="flex" pt="20rem" center pl="20rem" pr="15rem">
+					<Box mt="2rem">
+						<Text
+							fontSize="4.8rem"
+							color="yellow-10"
+							mb="0"
+							fontWeight="extra-bold"
+						>
+							Team <br />
+							Description
+						</Text>
+						<Text
+							fontSize="2rem"
+							color="grey"
+							mb="4.8rem"
+							maxWidth="50rem"
+							fontWeight="thin"
+						>
+							{
+              metaData?.collectionDetails?.valueProposition}
+						</Text>
+					</Box>
+					<Box ml="8rem">
+						<Image
+							src="/static/images/spaceman-4.png"
+							height="490"
+							width="490"
+							quality="75"
+						/>
+					</Box>
+				</Box>
 				<Box display="flex" pt="20rem" center pl="20rem" pr="15rem">
 					<Box mt="2rem">
 						<Text
@@ -306,8 +332,7 @@ const ProjPageComp = () => {
 							maxWidth="50rem"
 							fontWeight="thin"
 						>
-							{
-              metaData?.collectionDetails?.valueProposition}
+							{metaData?.collectionDetails?.valueProposition}
 						</Text>
 					</Box>
 					<Box ml="8rem">
@@ -319,51 +344,6 @@ const ProjPageComp = () => {
 						/>
 					</Box>
 				</Box>
-				{/* <------------------ REPETITVE CONTENT TO BE DELETED LATER ------------------> */}
-				<Box display="flex" pt="20rem" center pl="20rem" pr="15rem">
-					<Box mt="2rem">
-						<Text
-							fontSize="4.8rem"
-							color="yellow-10"
-							mb="0"
-							fontWeight="extra-bold"
-						>
-							10,000 <br />
-							Generative Characters
-						</Text>
-						<Text
-							fontSize="4.8rem"
-							color="white-10"
-							mt="0"
-							mb="4.8rem"
-							fontWeight="extra-bold"
-						>
-							ready to tell a story.
-						</Text>
-						<Text
-							fontSize="2rem"
-							color="grey"
-							mb="4.8rem"
-							maxWidth="50rem"
-							fontWeight="thin"
-						>
-							SMAC is a collection of 10,000 Generative pieces of art with
-							references from an upcoming comic book. The collection focuses on
-							characters and their stylised appearance as well as their part in
-							the story arc based on the SMAC comic book.
-						</Text>
-					</Box>
-					<Box ml="8rem">
-						<Image
-							src="/static/images/spaceman-4.png"
-							height="490"
-							width="490"
-							quality="75"
-						/>
-					</Box>
-				</Box>
-
-				{/* <------------------ REPETITVE CONTENT TO BE DELETED LATER ENDS ------------------> */}
 			</Box>
 		</Box>
 	);
