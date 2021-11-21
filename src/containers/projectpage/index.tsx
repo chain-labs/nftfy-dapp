@@ -2,9 +2,12 @@ import axios from "axios";
 import Box from "src/components/Box";
 import Image from "next/image";
 import Text from "src/components/Text";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { BigNumber } from "ethers";
 import { formatUnits } from "@ethersproject/units";
+import useContract from "src/ethereum/useContracts";
+import { StatesContext } from "src/components/StatesContext";
+
 
 const ProjPageComp = () => {
   const data = require('src/json/metadata.json')
@@ -23,12 +26,7 @@ const ProjPageComp = () => {
     const ethNo = formatUnits(bigNo,18)
     console.log(ethNo)
   }
-
-  useEffect(() => {
-    fetchMetadata()
-    // if(metaData)
-    // console.log(metaData.collectionDetails.name)
-  }, [])  
+ 
 //   return (
 //     <Box>
 //       {/* <-------------BANNER BACKGROUND----------------> */}
@@ -72,6 +70,13 @@ const ProjPageComp = () => {
 //       <Box
 //         position="absolute"
 //         top="10"
+	
+	const [price, setPrice] = useState<Number>();
+	const state = useContext(StatesContext);
+	const CollectionFactory = useContract("CollectionFactory", state.provider);
+
+
+	
 
 //         left="50%"
 //         transform="translateX(-50%)"
@@ -133,37 +138,21 @@ const ProjPageComp = () => {
 //         </Text>
 //         <Box center>
 
-//         <Box as="input"
-//         value={`${noOfTokens}`}
-//         type="number"
-//         mb="mxxl"
-//         mr="mxxl"
-//         px="4.8rem"
-//         py="1rem"
-//         onChange={(e)=>setNoOfTokens(e.target.value)}
-//         >
-//         </Box>
-//         <Box
-//           bg="yellow-10"
-//         //   zIndex={2}
-//           px="4.8rem"
-//           py="2rem"
-//           borderRadius="4px"
-//           cursor="pointer"
-//           className="cta-btn"
-//           onClick={buyNft}
-//         >
-//           <Text fontSize="2rem" color="black-20" fontWeight="extra-bold">
-//             Let's Begin
-//           </Text>
-//         </Box>
-//         </Box>
-//       </Box>
-//       {/* <-------------BANNER BACKGROUND ENDS----------------> */}
+	useEffect(() => {
+		const getContractInfo = async () => {
+		  const MetaData = await CollectionFactory.callStatic.presaleStartTime();
+		  const nftfySharesBN = await CollectionFactory.callStatic.nftifyShares();
+		  const upfrontFee = await CollectionFactory.callStatic.upfrontFee();
+		  console.log(nftfySharesBN)
+		};
+		if (CollectionFactory) {
+		  getContractInfo();
+		}
+	  }, [CollectionFactory]);
 
-// 	useEffect(() => {
-// 		fetchMetadata();
-// 	}, []);
+	useEffect(() => {
+		fetchMetadata();
+	}, [metaData]);
 
 	return (
 		<Box>
@@ -301,8 +290,7 @@ const ProjPageComp = () => {
 							maxWidth="50rem"
 							fontWeight="thin"
 						>
-							{
-              metaData?.collectionDetails?.valueProposition}
+							{metaData?.collectionDetails?.teamDescription}
 						</Text>
 					</Box>
 					<Box ml="8rem">
