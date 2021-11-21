@@ -5,163 +5,63 @@ import Text from "src/components/Text";
 import { useContext, useEffect, useState } from "react";
 import { BigNumber } from "ethers";
 import { formatUnits } from "@ethersproject/units";
-import useContract from "src/ethereum/useContracts";
+import useCustomContract from "src/ethereum/useCustomContract";
 import { StatesContext } from "src/components/StatesContext";
 
-
 const ProjPageComp = () => {
-  const data = require('src/json/metadata.json')
-  const [noOfTokens, setNoOfTokens] = useState<Number>()
-  const [metaData, setMetaData] = useState<any>()
-  const fetchMetadata = async()=>{
-    const res = await axios.get("https://nftfy.mypinata.cloud/ipfs/Qmc63mtnfi3pdqKSUcfoUpfKxEPnPCLNPpnRgwfjqnzjMV")
-    // console.log(JSON.parse(res.data))
-    console.log(res.data)
-    setMetaData(res.data)
-  }
-  const buyNft = async() =>{
-    console.log(noOfTokens)
-    const bigNo = BigNumber.from(metaData?.tokenDetails.basic.price).mul(BigNumber.from(noOfTokens))
-    console.log(BigNumber.from(metaData?.tokenDetails.basic.price).mul(BigNumber.from(noOfTokens)).toString())
-    const ethNo = formatUnits(bigNo,18)
-    console.log(ethNo)
-  }
- 
-//   return (
-//     <Box>
-//       {/* <-------------BANNER BACKGROUND----------------> */}
-//       {/* <Box
-//         height="100vh"
-//         width="100vw"
-//         bg="blue-10"
-//         zIndex={10}
-//         className="overlay"
-//         position="absolute"
-//         top="0"
-//       ></Box> */}
-//       <Box
-//         width="100vw"
-//         height="100vh"
-//         // position="fixed"
-//         top={{ mobS: 0, tabS: -10 }}
-//         zIndex={-1}
-//         className="banner"
-//       >
-//         <Image
-//           src={data.collectionDetails.bannerImageUrl}
-//           alt="banner"
-//           height="9"
-//           width="16"
-//           layout="responsive"
-//           quality={1}
-//           priority
-//         //   onLoadingComplete={introAnimation}
-//         ></Image>
-//         {/* <Box
-//           bg="black-10"
-//           opacity="50%"
-//           height="120vh"
-//           width="100vw"
-//         //   position="absolute"
-//         //   top="0"
-//           left="0"
-//         ></Box> */}
-//       </Box>
-//       <Box
-//         position="absolute"
-//         top="10"
-	
+	const data = require("src/json/metadata.json");
+	const [noOfTokens, setNoOfTokens] = useState<Number>();
+	const [metaData, setMetaData] = useState<any>();
+	const [cId, setCId]=useState<String>()
 	const [price, setPrice] = useState<Number>();
 	const state = useContext(StatesContext);
-	const CollectionFactory = useContract("CollectionFactory", state.provider);
+	const Collection = useCustomContract(
+		"Collection",
+		"0xf0412E56927C4e58E5cF680bD7C7A88A3DF11229",
+		state.provider
+	);
+	const fetchMetadata = async () => {
+		if(cId){
+			const res = await axios.get(
+				`https://nftfy.mypinata.cloud/ipfs/${cId}`
+			);
+			setMetaData(res.data);
+		}
+	};
+	const buyNft = async () => {
+		console.log(noOfTokens);
+		const bigNo = BigNumber.from(metaData?.tokenDetails.basic.price).mul(
+			BigNumber.from(noOfTokens)
+		);
+		console.log(
+			BigNumber.from(metaData?.tokenDetails.basic.price)
+				.mul(BigNumber.from(noOfTokens))
+				.toString()
+		);
+		const ethNo = formatUnits(bigNo, 18);
+		// console.log(ethNo)
+	};
 
-
-	
-
-//         left="50%"
-//         transform="translateX(-50%)"
-//         row
-//         center
-//       >
-//         <Box row>
-//           <Text fontSize="2rem" color="white-10" mr="4rem">
-//             About
-//           </Text>
-//           <Text fontSize="2rem" color="white-10" mr="4rem">
-//             Gallery
-//           </Text>
-//           <Text fontSize="2rem" color="white-10" mr="4rem">
-//             Roadmap
-//           </Text>
-//         </Box>
-//         <Box
-//           borderRadius="50%"
-//           height="8rem"
-//           width="8rem"
-//           position="relative"
-//           overflow="hidden"
-//         >
-//           <Image src="/static/images/logo.jpeg" layout="fill" />
-//         </Box>
-//         <Box row ml="4rem">
-//           <Text fontSize="2rem" color="white-10" mr="4rem">
-//             About
-//           </Text>
-//           <Text fontSize="2rem" color="white-10" mr="4rem">
-//             Gallery
-//           </Text>
-//           <Text fontSize="2rem" color="white-10">
-//             Roadmap
-//           </Text>
-//         </Box>
-//       </Box>
-//       <Box
-//         position="absolute"
-//         top="30%"
-//         left="50%"
-//         transform="translateX(-50%)"
-//         column
-//         center
-//         minWidth="70%"
-//         zIndex={3}
-//       >
-//         <Text
-//           id="headline"
-//           color="white"
-//           fontSize={{ mobS: "3.6rem", tabS: "7.2rem" }}
-//           fontWeight="extra-bold"
-//           mb="20rem"
-//           textTransform="uppercase"
-//           textAlign="center"
-//         >
-//           {/* {metaData?.collectionDetails?.name} */}
-//         </Text>
-//         <Box center>
 
 	useEffect(() => {
 		const getContractInfo = async () => {
-		  const MetaData = await CollectionFactory.callStatic.presaleStartTime();
-		  const nftfySharesBN = await CollectionFactory.callStatic.nftifyShares();
-		  const upfrontFee = await CollectionFactory.callStatic.upfrontFee();
-		  console.log(nftfySharesBN)
+			const cid = await Collection.callStatic.metadata();
+			console.log(cid);
+			setCId(cid)
 		};
-		if (CollectionFactory) {
-		  getContractInfo();
+		if (Collection) {
+			getContractInfo();
 		}
-	  }, [CollectionFactory]);
+	}, [Collection]);
 
 	useEffect(() => {
 		fetchMetadata();
-	}, [metaData]);
+	}, [cId]);
 
 	return (
 		<Box>
 			{/* <-------------BANNER BACKGROUND----------------> */}
-			<Box
-				width="100vw"
-				height="100vh"
-				top={{ mobS: 0, tabS: -10 }}
-			>
+			<Box width="100vw" height="100vh" top={{ mobS: 0, tabS: -10 }}>
 				<Box
 					as="img"
 					src={data.collectionDetails.bannerImageUrl}
@@ -196,7 +96,7 @@ const ProjPageComp = () => {
 					position="relative"
 					overflow="hidden"
 				>
-					<Image src="/static/images/logo.jpeg" layout="fill" />
+					{/* <Image src="/static/images/logo.jpeg" layout="fill" /> */}
 				</Box>
 				<Box row ml="4rem">
 					<Text fontSize="2rem" color="white-10" mr="4rem">
@@ -229,8 +129,7 @@ const ProjPageComp = () => {
 					textTransform="uppercase"
 					textAlign="center"
 				>
-					{
-          metaData?.collectionDetails?.name}
+					{metaData?.collectionDetails?.name}
 				</Text>
 				<Box center bg="purple-black" padding="mxl">
 					<Box

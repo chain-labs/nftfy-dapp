@@ -1,4 +1,4 @@
-const withTM = require('next-transpile-modules')(['gsap', 'react-timezone-select']);
+const withTM = require('next-transpile-modules')([ 'react-timezone-select'],{resolveSymlinks:true});
 
 module.exports = withTM({
 	webpack(config) {
