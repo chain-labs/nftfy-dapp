@@ -12,7 +12,7 @@ export interface InputProps {
 
 const LabelledDateTime = ({ label, placeholder, set, data }: InputProps) => {
   const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
+  const [time, setTime] = useState("00:00:00");
   const [timezone, setTimezone] = useState(
     Intl.DateTimeFormat().resolvedOptions().timeZone
   );

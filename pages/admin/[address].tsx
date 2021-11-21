@@ -17,7 +17,7 @@ const AdminPage = () => {
     setContractAddress(router.query.address as string);
   }, [router.isReady]);
 
-  if (!state.provider || !state.signer) return null;
+  if (!state.provider || !state.signer || !contractAddress) return null;
   return <AdminComp contractAddress={contractAddress} />;
 };
 
