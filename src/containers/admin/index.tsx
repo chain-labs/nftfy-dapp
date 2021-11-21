@@ -80,8 +80,7 @@ const AdminComp = ({ contractAddress }: { contractAddress: string }) => {
     const getPendingPaymentInETH = async () => {
       const balance = await getPendingPayment();
       try {
-        const balanceInETH = ethers.utils.formatUnits(balance, 0);
-
+        const balanceInETH = ethers.utils.formatUnits(balance, 18);
         setBalance(balanceInETH);
       } catch (err) {
         console.log(err);
@@ -101,7 +100,7 @@ const AdminComp = ({ contractAddress }: { contractAddress: string }) => {
     const getContractBalance = async () => {
       try {
         const res = await state.provider.getBalance(contractAddress);
-        const balance = parseInt(ethers.utils.formatUnits(res, 18));
+        const balance = parseFloat(ethers.utils.formatUnits(res, 18));
         setContractBalance(balance);
       } catch (err) {}
     };
@@ -109,7 +108,7 @@ const AdminComp = ({ contractAddress }: { contractAddress: string }) => {
     const getTotalReleased = async () => {
       try {
         const res = await contract?.callStatic?.totalReleased();
-        const totalReleased = parseInt(ethers.utils.formatUnits(res, 18));
+        const totalReleased = parseFloat(ethers.utils.formatUnits(res, 18));
         setTotalReleased(totalReleased);
       } catch (err) {}
     };
