@@ -1,4 +1,4 @@
-const withTM = require('next-transpile-modules')([ 'react-timezone-select'],{resolveSymlinks:true});
+const withTM = require('next-transpile-modules')(['gsap', 'react-timezone-select']);
 
 module.exports = withTM({
 	webpack(config) {
@@ -9,9 +9,3 @@ module.exports = withTM({
 		return config;
 	},
 });
-
-// module.exports = {
-//     images: {
-//         domains: ['images.unsplash.com'],
-//     },
-// }
