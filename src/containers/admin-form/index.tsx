@@ -246,7 +246,7 @@ const HomeComp = () => {
 
   return (
     <div>
-      <Box mx="8rem" my="4rem" fontSize="3.2rem" row between maxWidth="50rem">
+      <Box mx="8rem" pt="12rem" pb="4rem" fontSize="3.2rem" row between maxWidth="50rem">
         Admin Page
       </Box>
       <Box
