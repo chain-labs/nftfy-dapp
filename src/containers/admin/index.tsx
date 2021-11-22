@@ -202,18 +202,30 @@ const AdminComp = ({ contractAddress }: { contractAddress: string }) => {
   };
 
   const handleAddWhitelist = async () => {
-    console.log("Adding", { presaleWhitelistAdd });
-    const newWhitelist = [...presaleWhitelists, ...presaleWhitelistAdd];
+    // console.log("Adding", { presaleWhitelistAdd });
+    // const newWhitelist = [...presaleWhitelists, ...presaleWhitelistAdd];
+    // setPresaleWhitelists(newWhitelist);
+    // try {
+    //   const res = await contract
+    //     .connect(state.signer)
+    //     .presaleWhitelistBatch(presaleWhitelistAdd);
+    //   const event = await res.wait().events[0];
+    //   console.log({ res, event });
+    //   setAddWhitelistModal(false);
+    //   setWhitelist("");
+    //   setPresaleWhitelistAdd([]);
+    // } catch (err) {
+    //   console.log(err);
+    // }
+    const newWhitelist = [...presaleWhitelists, whitelist];
     setPresaleWhitelists(newWhitelist);
     try {
       const res = await contract
-        .connect(state.signer)
-        .presaleWhitelistBatch(presaleWhitelistAdd);
-      const event = await res.wait().events[0];
-      console.log({ res, event });
-      setAddWhitelistModal(false);
-      setWhitelist("");
-      setPresaleWhitelistAdd([]);
+        ?.connect(state.signer)
+        ?.addWhitelist(whitelist);
+      console.log({ res });
+      const event = await res.wait();
+      console.log({ event });
     } catch (err) {
       console.log(err);
     }
@@ -339,6 +351,14 @@ const AdminComp = ({ contractAddress }: { contractAddress: string }) => {
             </Box>
           ))}
         />
+        <LabelledInput
+          label="Enter Address to add"
+          set={setWhitelist}
+          data={whitelist}
+        />
+        <Button bg="primary-blue" color="white" onClick={handleAddWhitelist}>
+          Add
+        </Button>
         {/* <Box
           fontSize="1.6rem"
           as="button"
@@ -428,7 +448,7 @@ const AdminComp = ({ contractAddress }: { contractAddress: string }) => {
                     cursor="pointer"
                     onClick={handleAddWhitelist}
                   >
-                    {`Add ${presaleWhitelistAdd?.length}`}
+                    {`Add`}
                   </Box>
                 </Box>
               </Box>
