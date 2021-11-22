@@ -5,7 +5,7 @@
       "chainId": "4",
       "contracts": {
         "Collection": {
-          "address": "0xCA06320A923dD7490B16195210618CC69725df63",
+          "address": "0xeA157802b4DDd06350cB09b58ef55a1Cc5191934",
           "abi": [
             {
               "anonymous": false,
@@ -293,6 +293,25 @@
               "name": "buy",
               "outputs": [],
               "stateMutability": "payable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "_owner",
+                  "type": "address"
+                }
+              ],
+              "name": "getAllTokensOfOwner",
+              "outputs": [
+                {
+                  "internalType": "uint256[]",
+                  "name": "",
+                  "type": "uint256[]"
+                }
+              ],
+              "stateMutability": "view",
               "type": "function"
             },
             {
@@ -1411,7 +1430,7 @@
           ]
         },
         "CollectionFactory": {
-          "address": "0xafdDAe29Ceafc017374858994c007336e5D423ef",
+          "address": "0x578AF9E9d9B2e804d560cD376D4DA395A44AAe6a",
           "abi": [
             {
               "inputs": [
