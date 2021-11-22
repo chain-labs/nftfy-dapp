@@ -5,7 +5,7 @@
       "chainId": "4",
       "contracts": {
         "Collection": {
-          "address": "0xeA157802b4DDd06350cB09b58ef55a1Cc5191934",
+          "address": "0xa161B5575b43373a3e9d648b9A85feEFcF0F2661",
           "abi": [
             {
               "anonymous": false,
@@ -1430,7 +1430,7 @@
           ]
         },
         "CollectionFactory": {
-          "address": "0x578AF9E9d9B2e804d560cD376D4DA395A44AAe6a",
+          "address": "0x428b7e35cfC91B116DA11431C8E635A4A1D69741",
           "abi": [
             {
               "inputs": [
