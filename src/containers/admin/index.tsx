@@ -231,6 +231,24 @@ const AdminComp = ({ contractAddress }: { contractAddress: string }) => {
     }
   };
 
+  const handleAddWhitelistBatch = async () => {
+    console.log("Adding", { presaleWhitelistAdd });
+    const newWhitelist = [...presaleWhitelists, ...presaleWhitelistAdd];
+    setPresaleWhitelists(newWhitelist);
+    try {
+      const res = await contract
+        .connect(state.signer)
+        .presaleWhitelistBatch(presaleWhitelistAdd);
+      const event = await res.wait().events[0];
+      console.log({ res, event });
+      setAddWhitelistModal(false);
+      setWhitelist("");
+      setPresaleWhitelistAdd([]);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const handleRemoveWhitelist = async (index) => {
     const prevAddress =
       index === 0 ? SENTINEL_ADDRESS : presaleWhitelists[index - 1];
@@ -351,15 +369,7 @@ const AdminComp = ({ contractAddress }: { contractAddress: string }) => {
             </Box>
           ))}
         />
-        <LabelledInput
-          label="Enter Address to add"
-          set={setWhitelist}
-          data={whitelist}
-        />
-        <Button bg="primary-blue" color="white" onClick={handleAddWhitelist}>
-          Add
-        </Button>
-        {/* <Box
+        <Box
           fontSize="1.6rem"
           as="button"
           border="none"
@@ -368,7 +378,7 @@ const AdminComp = ({ contractAddress }: { contractAddress: string }) => {
           onClick={() => setAddWhitelistModal(true)}
         >
           + Add
-        </Box> */}
+        </Box>
         <If
           condition={addWhitelistModal}
           then={
@@ -446,7 +456,7 @@ const AdminComp = ({ contractAddress }: { contractAddress: string }) => {
                     bg="primary-blue"
                     color="white"
                     cursor="pointer"
-                    onClick={handleAddWhitelist}
+                    onClick={handleAddWhitelistBatch}
                   >
                     {`Add`}
                   </Box>
