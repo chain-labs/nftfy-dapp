@@ -239,8 +239,7 @@ const AdminComp = ({ contractAddress }: { contractAddress: string }) => {
       const res = await contract
         .connect(state.signer)
         .presaleWhitelistBatch(presaleWhitelistAdd);
-      const event = await res.wait().events[0];
-      console.log({ res, event });
+      console.log({ res });
       setAddWhitelistModal(false);
       setWhitelist("");
       setPresaleWhitelistAdd([]);
