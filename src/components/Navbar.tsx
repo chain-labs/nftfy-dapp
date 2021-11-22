@@ -34,11 +34,16 @@ const Navbar = () => {
   return (
     <Box
       row
-      justifyContent="flex-end"
+      justifyContent="space-between"
       position="absolute"
       px="8rem"
       width="100%"
+      py="2rem"
+      alignItems="center"
     >
+      <Text fontSize="2.8rem" fontWeight="bold">
+        NFTfy
+      </Text>
       <Box
         as="button"
         px="2rem"
