@@ -1,12 +1,16 @@
 import { ethers, providers } from "ethers";
 import { ReactChild, useContext, useEffect, useState } from "react";
 import Box from "src/components/Box";
+import Modal from "src/components/Modal";
 import LabelledDateTime from "src/components/LabelledDateTime";
 import LabelledInput from "src/components/LabelledInput";
 import { StatesContext } from "src/components/StatesContext";
 import Text from "src/components/Text";
 import useCustomContract from "src/ethereum/useCustomContract";
 import theme from "src/styleguide/theme";
+import If from "src/components/If";
+
+const SENTINEL_ADDRESS = "0x0000000000000000000000000000000000000001";
 
 const Divider = () => {
   return (
@@ -61,6 +65,14 @@ const AdminComp = ({ contractAddress }: { contractAddress: string }) => {
   const [tokenIDToTransfer, setTokenIDToTransfer] = useState(0);
   const [contractBalance, setContractBalance] = useState(0);
   const [totalReleased, setTotalReleased] = useState(0);
+  const [presaleTimestamp, setPresaleTimestamp] = useState("");
+  const [presaleWhitelists, setPresaleWhitelists] = useState([]);
+
+  const [confirmDeleteModal, setConfirmDeleteModal] = useState(0);
+  const [addWhitelistModal, setAddWhitelistModal] = useState(false);
+  const [presaleWhitelistAdd, setPresaleWhitelistAdd] = useState([]);
+
+  const [whitelist, setWhitelist] = useState<string>("");
 
   const state = useContext(StatesContext);
 
@@ -113,10 +125,18 @@ const AdminComp = ({ contractAddress }: { contractAddress: string }) => {
       } catch (err) {}
     };
 
+    const getPresaleWhitelist = async () => {
+      try {
+        const res = await contract?.callStatic?.getPresaleWhitelists();
+        setPresaleWhitelists(res);
+      } catch (err) {}
+    };
+
     getContractBalance();
     getTotalReleased();
     getPendingPaymentInETH();
     getTransferTokenID();
+    getPresaleWhitelist();
   });
 
   const handlePublicSaleTimestampUpdate = async () => {
@@ -137,7 +157,14 @@ const AdminComp = ({ contractAddress }: { contractAddress: string }) => {
   };
 
   const handleRelease = async () => {
-    const res = await contract.connect(state.signer).release(releaseAmount);
+    const releaseAmountInWei = ethers.utils
+      .parseEther(releaseAmount)
+      .toString();
+    console.log({ releaseAmountInWei });
+
+    const res = await contract
+      .connect(state.signer)
+      .release(releaseAmountInWei);
     console.log({ res });
   };
 
@@ -160,11 +187,56 @@ const AdminComp = ({ contractAddress }: { contractAddress: string }) => {
     console.log({ res });
   };
 
+  const handleSetPresaleTimestamp = async () => {
+    const res = await contract
+      .connect(state.signer)
+      .setPresaleStartTime(presaleTimestamp);
+    console.log({ res });
+  };
+
   const handleTransferTokens = async () => {
     const res = await contract
       .connect(state.signer)
       .transferReservedToken(addressToTransfer);
     console.log({ res });
+  };
+
+  const handleAddWhitelist = async () => {
+    console.log("Adding", { presaleWhitelistAdd });
+    const newWhitelist = [...presaleWhitelists, ...presaleWhitelistAdd];
+    setPresaleWhitelists(newWhitelist);
+    try {
+      const res = await contract
+        .connect(state.signer)
+        .presaleWhitelistBatch(presaleWhitelistAdd);
+      const event = await res.wait().events[0];
+      console.log({ res, event });
+      setAddWhitelistModal(false);
+      setWhitelist("");
+      setPresaleWhitelistAdd([]);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleRemoveWhitelist = async (index) => {
+    const prevAddress =
+      index === 0 ? SENTINEL_ADDRESS : presaleWhitelists[index - 1];
+    const currentAddress = presaleWhitelists[index];
+    const pw = [...presaleWhitelists];
+    const newPresaleWhitelists = [...presaleWhitelists];
+    newPresaleWhitelists.splice(index, 1);
+    setPresaleWhitelists(newPresaleWhitelists);
+    try {
+      const res = await contract
+        .connect(state.signer)
+        .removeWhitelist(prevAddress, currentAddress);
+      console.log({ res });
+      setConfirmDeleteModal(0);
+    } catch (err) {
+      setPresaleWhitelists(pw);
+      console.log({ err });
+    }
   };
 
   return (
@@ -230,6 +302,187 @@ const AdminComp = ({ contractAddress }: { contractAddress: string }) => {
             ml="1rem"
           >{`${balance} ETH`}</Text>
         </Text>
+      </Box>
+      <Box mt="4rem">
+        <Text fontSize="4rem" fontWeight="medium">
+          Presaleable
+        </Text>
+        <Divider />
+        <Text fontSize="2rem" fontWeight="bold">
+          Presale Whitelists
+        </Text>
+        <If
+          condition={presaleWhitelists?.length === 0}
+          then={
+            <Box fontSize="1.6rem" fontWeight="thin">
+              No Whitelists
+            </Box>
+          }
+          else={presaleWhitelists?.map((address, index) => (
+            <Box key={`${index}-${address}`} row>
+              <Text fontSize="1.2rem" fontWeight="regular" minWidth="35rem">
+                {`${index + 1}. ${address}`}
+              </Text>
+              <Box
+                color="primary-red"
+                fontSize="1.2rem"
+                cursor="pointer"
+                onClick={() => setConfirmDeleteModal(index + 1)}
+                css={`
+                  &:hover {
+                    text-decoration: underline;
+                  }
+                `}
+              >
+                Remove
+              </Box>
+            </Box>
+          ))}
+        />
+        {/* <Box
+          fontSize="1.6rem"
+          as="button"
+          border="none"
+          bg="white"
+          color="primary-blue"
+          onClick={() => setAddWhitelistModal(true)}
+        >
+          + Add
+        </Box> */}
+        <If
+          condition={addWhitelistModal}
+          then={
+            <Modal>
+              <Box>
+                <Text fontSize="2.4rem" fontWeight="bold">
+                  Add Whitelist
+                </Text>
+                <LabelledInput
+                  label="Address"
+                  set={setWhitelist}
+                  data={whitelist}
+                />
+                <Box
+                  maxWidth="10rem"
+                  py="1rem"
+                  borderRadius="4px"
+                  center
+                  bg="primary-blue"
+                  color="white"
+                  cursor="pointer"
+                  onClick={() => {
+                    setPresaleWhitelistAdd([...presaleWhitelistAdd, whitelist]);
+                    setWhitelist("");
+                  }}
+                >
+                  Add
+                </Box>
+                {presaleWhitelistAdd?.map((address, index) => (
+                  <Box key={`${index}-${address}`} row mt="1rem">
+                    <Text
+                      fontSize="1.2rem"
+                      fontWeight="regular"
+                      minWidth="35rem"
+                    >
+                      {`${index + 1}. ${address}`}
+                    </Text>
+                    <Box
+                      color="primary-red"
+                      fontSize="1.2rem"
+                      cursor="pointer"
+                      onClick={() => {
+                        const p = [...presaleWhitelistAdd];
+                        p.splice(index, 1);
+                        console.log({ p });
+                        setPresaleWhitelistAdd(p);
+                      }}
+                      css={`
+                        &:hover {
+                          text-decoration: underline;
+                        }
+                      `}
+                    >
+                      Remove
+                    </Box>
+                  </Box>
+                ))}
+                <Box row mt="2rem">
+                  <Box
+                    py="1rem"
+                    borderRadius="4px"
+                    px="3.2rem"
+                    bg="primary-red"
+                    color="white"
+                    cursor="pointer"
+                    onClick={() => setAddWhitelistModal(false)}
+                  >
+                    Cancel
+                  </Box>
+                  <Box
+                    ml="2rem"
+                    py="1rem"
+                    borderRadius="4px"
+                    px="3.2rem"
+                    bg="primary-blue"
+                    color="white"
+                    cursor="pointer"
+                    onClick={handleAddWhitelist}
+                  >
+                    {`Add ${presaleWhitelistAdd?.length}`}
+                  </Box>
+                </Box>
+              </Box>
+            </Modal>
+          }
+        />
+        <If
+          condition={confirmDeleteModal > 0}
+          then={
+            <Modal>
+              <Box center column>
+                <Text fontSize="2rem" fontWeight="regular">
+                  Are you sure you want to remove this address?
+                </Text>
+                <Text fontSize="1.2rem" fontWeight="regular">
+                  {presaleWhitelists?.[confirmDeleteModal - 1]}
+                </Text>
+                <Box row between mt="4rem" minWidth="20rem">
+                  <Button
+                    bg="primary-red"
+                    color="white"
+                    onClick={() => setConfirmDeleteModal(0)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    bg="primary-blue"
+                    color="white"
+                    onClick={() =>
+                      handleRemoveWhitelist(confirmDeleteModal - 1)
+                    }
+                  >
+                    Confirm
+                  </Button>
+                </Box>
+              </Box>
+            </Modal>
+          }
+        />
+        <Box row alignItems="center" mt="2rem">
+          <LabelledDateTime
+            label="Set Presale Time"
+            set={setPresaleTimestamp}
+            data={presaleTimestamp}
+          />
+          <Box ml="4rem">
+            <Button
+              disabled={!revealTimestamp || revealTimestamp < 0}
+              onClick={handleSetPresaleTimestamp}
+            >
+              Update
+            </Button>
+          </Box>
+        </Box>
       </Box>
       <Box mt="4rem">
         <Text fontSize="4rem" fontWeight="medium">
