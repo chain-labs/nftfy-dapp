@@ -24,6 +24,8 @@ const useContract = (contractName: string, provider: ProviderProps): any => {
     if (providers.Provider.isProvider(provider)) {
       try {
         const { address, abi } = getContractDetails(contractName, provider);
+        console.log("This is working");
+        console.log(address,abi, provider);
         setContract(new ethers.Contract(address, abi, provider));
       } catch (error) {
         setContract(undefined);
