@@ -16,7 +16,6 @@ const useEthers = (): UseEthersResult => {
   };
 
   useEffect(() => {
-		console.log("useEthers started", provider);
     const process = async () => {
       const { provider, ethers } = await getEthers();
       setProvider(provider as ProviderProps);
@@ -30,7 +29,7 @@ const useEthers = (): UseEthersResult => {
       try {
         await requestAccount();
       } catch (e) {
-        console.log(e);
+        console.log("Error at useEthers:", e);
       }
     }
   };
