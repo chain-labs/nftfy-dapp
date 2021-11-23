@@ -6,13 +6,17 @@ import { ProviderProps } from "./types";
 export const getContractDetails = (contractName, provider) => {
   if (provider?.provider) {
     const network = contracts[provider.provider.networkVersion];
+    console.log(network);
     const contractDetails =
       network[Object.keys(network)[0]].contracts[contractName];
+    console.log(contractDetails)
     return { address: contractDetails.address, abi: contractDetails.abi };
   } else {
     const network = contracts["4"];
+    console.log(network);
     const contractDetails =
       network[Object.keys(network)[0]].contracts[contractName];
+    console.log(contractDetails)
     return { address: contractDetails.address, abi: contractDetails.abi };
   }
 };
@@ -29,6 +33,7 @@ const useContract = (contractName: string, provider: ProviderProps): any => {
         setContract(new ethers.Contract(address, abi, provider));
       } catch (error) {
         setContract(undefined);
+        console.log(provider, contract);
         console.log(error);
         return error.message;
       }
