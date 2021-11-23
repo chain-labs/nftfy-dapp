@@ -56,14 +56,14 @@ space.wl = space[13]; //80px
 space.wxl = space[14]; //100px
 space.wxxl = space[15]; //120px
 
-const colors: DefaultTheme['colors'] = {
-	'purple-black': '#0D0619',
-	'secondary-black': '#010404',
-	'primary-green': '#0AD48B',
-	'accent-green': '#04FFA4',
-	'primary-white': '#E6E7E8',
-	'primary-red': '#E91C1C',
-	'primary-blue': '#3B89D6',
+const colors: DefaultTheme["colors"] = {
+  "purple-black": "#0D0619",
+  "secondary-black": "#010404",
+  "primary-green": "#0AD48B",
+  "accent-green": "#04FFA4",
+  "primary-white": "#E6E7E8",
+  "primary-red": "#E91C1C",
+  "primary-blue": "#3B89D6",
 };
 
 const theme: DefaultTheme = {

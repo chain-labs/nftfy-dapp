@@ -2,43 +2,141 @@ import axios from "axios";
 import Box from "src/components/Box";
 import Image from "next/image";
 import Text from "src/components/Text";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { BigNumber } from "ethers";
 import { formatUnits } from "@ethersproject/units";
+import useCustomContract from "src/ethereum/useCustomContract";
+import { StatesContext } from "src/components/StatesContext";
+import If from "src/components/If";
 
 const ProjPageComp = () => {
 	const data = require("src/json/metadata.json");
 	const [noOfTokens, setNoOfTokens] = useState<Number>();
 	const [metaData, setMetaData] = useState<any>();
+	const [cId, setCId] = useState<String>();
 	const [price, setPrice] = useState<Number>();
-
+	const state = useContext(StatesContext);
+	const [contractInfo, setContractInfo] = useState<any>();
+	const [isPresaleBuyButtonActive, setIsPresaleBuyButtonActive] =
+		useState<boolean>(false);
+	const [isPublicSaleBuyButtonActive, setIsPublicSaleBuyButtonActive] =
+		useState<boolean>(false);
+	const [presaleStartTime, setPreSaleStartTime] = useState<Date>();
+	const [presaleTimerActive, setpresaleTimerActive] = useState<boolean>(false);
+	const [publicSaleStartTime, setPublicSaleStartTime] = useState<Date>();
+	const [publicSaleTimerActive, setPublicSaleTimerActive] =
+		useState<boolean>(false);
+	const [isSaleEnded, setIsSaleEnded] = useState<boolean>(false);
+	const Collection = useCustomContract(
+		"Collection",
+		"0x3A8ED8661e76A46Da74423F081e4dc1d8F9CF904",
+		state.provider
+	);
 	const fetchMetadata = async () => {
-		const res = await axios.get(
-			"https://nftfy.mypinata.cloud/ipfs/Qmc63mtnfi3pdqKSUcfoUpfKxEPnPCLNPpnRgwfjqnzjMV"
-		);
-		setMetaData(res.data);
+		if (cId) {
+			const res = await axios.get(`https://nftfy.mypinata.cloud/ipfs/${cId}`);
+			console.log(res);
+			setMetaData(res.data);
+		}
 	};
-
 	const buyNft = async () => {
+		console.log(noOfTokens);
 		const bigNo = BigNumber.from(metaData?.tokenDetails.basic.price).mul(
 			BigNumber.from(noOfTokens)
 		);
+		console.log(
+			BigNumber.from(metaData?.tokenDetails.basic.price)
+				.mul(BigNumber.from(noOfTokens))
+				.toString()
+		);
 		const ethNo = formatUnits(bigNo, 18);
 		setPrice(parseFloat(ethNo));
+		if (isPresaleBuyButtonActive)
+			Collection.connect(state.signer)["presaleBuy(uint256)"](noOfTokens, {
+				value: bigNo,
+			});
+		if (isPublicSaleBuyButtonActive)
+			Collection.connect(state.signer)["buy(uint256)"](noOfTokens, {
+				value: bigNo,
+			});
 	};
 
 	useEffect(() => {
+		const getContractInfo = async () => {
+			const cid = await Collection.callStatic.metadata();
+			const isPresaleAllowed = await Collection.callStatic.isPresaleAllowed();
+			const presaleStartTime = await Collection.callStatic.presaleStartTime();
+			const isPresaleActive = await Collection.callStatic.isPresaleActive();
+			const publicSaleStartTime =
+				await Collection.callStatic.publicSaleStartTime();
+			const isSaleActive = await Collection.callStatic.isSaleActive();
+			const tokensCount = await Collection.callStatic.tokensCount();
+			const startingTokenIndex =
+				await Collection.callStatic.startingTokenIndex();
+			const maximumTokens = await Collection.callStatic.maximumTokens();
+			const currentTime = Date.now();
+			setContractInfo({
+				isPresaleAllowed: isPresaleAllowed,
+				presaleStartTime: presaleStartTime * 1000,
+				isPresaleActive: isPresaleActive,
+				publicSaleStartTime: publicSaleStartTime * 1000,
+				isSaleActive: isSaleActive,
+				tokensCount: tokensCount,
+				startingTokenIndex: startingTokenIndex,
+				maximumTokens: maximumTokens,
+				currentTime: currentTime,
+			});
+			console.log(cid);
+			setCId(cid);
+		};
+		if (Collection) {
+			getContractInfo();
+		}
+	}, [Collection]);
+
+	useEffect(() => {
 		fetchMetadata();
-	}, []);
+	}, [cId]);
+
+	useEffect(() => {
+		console.log(contractInfo?.presaleStartTime);
+		if (
+			contractInfo?.isPresaleAllowed &&
+			contractInfo?.currentTime < contractInfo?.presaleStartTime
+		) {
+			setpresaleTimerActive(true);
+			setPreSaleStartTime(contractInfo.presaleStartTime);
+		}
+		if (contractInfo?.isPresaleAllowed && contractInfo?.isPresaleActive) {
+			setpresaleTimerActive(false);
+			setIsPresaleBuyButtonActive(true);
+		}
+		if (contractInfo?.isPresaleActive) setIsPresaleBuyButtonActive(false);
+		if (
+			!presaleTimerActive &&
+			!isPresaleBuyButtonActive &&
+			contractInfo?.currentTime < contractInfo?.publicSaleStartTime
+		) {
+			setPublicSaleTimerActive(true);
+			setPublicSaleStartTime(contractInfo.publicSaleStartTime);
+		}
+		if (contractInfo?.isSaleActive) {
+			setPublicSaleTimerActive(false);
+			setIsPublicSaleBuyButtonActive(true);
+		}
+		if (
+			contractInfo?.tokensCount + contractInfo?.startingTokenIndex ==
+			contractInfo?.maximumTokens
+		) {
+			setIsSaleEnded(true);
+			setIsPublicSaleBuyButtonActive(false);
+		}
+	}, [contractInfo]);
 
 	return (
 		<Box>
 			{/* <-------------BANNER BACKGROUND----------------> */}
-			<Box
-				width="100vw"
-				height="100vh"
-				top={{ mobS: 0, tabS: -10 }}
-			>
+			<Box width="100vw" height="100vh" top={{ mobS: 0, tabS: -10 }}>
 				<Box
 					as="img"
 					src={data.collectionDetails.bannerImageUrl}
@@ -73,7 +171,7 @@ const ProjPageComp = () => {
 					position="relative"
 					overflow="hidden"
 				>
-					<Image src="/static/images/logo.jpeg" layout="fill" />
+					{/* <Image src="/static/images/logo.jpeg" layout="fill" /> */}
 				</Box>
 				<Box row ml="4rem">
 					<Text fontSize="2rem" color="white-10" mr="4rem">
@@ -108,40 +206,109 @@ const ProjPageComp = () => {
 				>
 					{metaData?.collectionDetails?.name}
 				</Text>
-				<Box center bg="purple-black" padding="mxl">
-					<Box
-						as="input"
-						value={`${noOfTokens}`}
-						type="number"
-						mb="mxxl"
-						mr="mxxl"
-						px="4.8rem"
-						py="1rem"
-						onChange={(e) => setNoOfTokens(e.target.value)}
-					></Box>
-					<Box
-						bg="accent-green"
-						px="4.8rem"
-						py="2rem"
-						borderRadius="4px"
-						cursor="pointer"
-						className="cta-btn"
-						onClick={buyNft}
-						mr="mxxl"
-					>
-						<Text fontSize="2rem" color="black-20" fontWeight="extra-bold">
-							Let's Begin
-						</Text>
+				<Box bg="purple-black" padding="mxl">
+					<Box center>
+						<Box
+							as="input"
+							value={`${noOfTokens}`}
+							type="number"
+							mb="mxxl"
+							mr="mxxl"
+							px="4.8rem"
+							py="1rem"
+							onChange={(e) => setNoOfTokens(e.target.value)}
+						></Box>
+						{isPresaleBuyButtonActive ? (
+							<Box
+								bg="accent-green"
+								px="4.8rem"
+								py="2rem"
+								borderRadius="4px"
+								cursor="pointer"
+								className="cta-btn"
+								onClick={buyNft}
+								mr="mxxl"
+							>
+								<Text fontSize="2rem" color="black-20" fontWeight="extra-bold">
+									presale buy
+								</Text>
+							</Box>
+						) : (
+							""
+						)}
+						<If
+							condition={isPublicSaleBuyButtonActive}
+							then={
+								<Box
+									bg="accent-green"
+									px="4.8rem"
+									py="2rem"
+									borderRadius="4px"
+									cursor="pointer"
+									className="cta-btn"
+									onClick={buyNft}
+									mr="mxxl"
+								>
+									<Text
+										fontSize="2rem"
+										color="black-20"
+										fontWeight="extra-bold"
+									>
+										Public buy
+									</Text>
+								</Box>
+							}
+						/>
+						<If
+							condition={isPresaleBuyButtonActive}
+							then={
+								<Box
+									bg="accent-green"
+									px="4.8rem"
+									py="2rem"
+									borderRadius="4px"
+									cursor="pointer"
+									className="cta-btn"
+									onClick={buyNft}
+									mr="mxxl"
+								>
+									<Text
+										fontSize="2rem"
+										color="black-20"
+										fontWeight="extra-bold"
+									>
+										presale buy
+									</Text>
+								</Box>
+							}
+						/>
+						{price ? (
+							<Box bg="primary-blue" px="4.8rem" py="2rem" borderRadius="4px">
+								<Text fontSize="2rem" color="black-20" fontWeight="extra-bold">
+									{price} ETH
+								</Text>
+							</Box>
+						) : (
+							""
+						)}
 					</Box>
-					{price ? (
-						<Box bg="primary-blue" px="4.8rem" py="2rem" borderRadius="4px">
-							<Text fontSize="2rem" color="black-20" fontWeight="extra-bold">
-								{price} ETH
-							</Text>
-						</Box>
+					{presaleStartTime ? (
+						<Text color="white">
+							{" "}
+							Presale Starts At {new Date(presaleStartTime).toString()}
+						</Text>
 					) : (
 						""
 					)}
+					{publicSaleStartTime ? (
+						<Text color="white">
+							{" "}
+							Public Sale Starts At {new Date(publicSaleStartTime).toString()}
+						</Text>
+					) : (
+						""
+					)}
+					{isSaleEnded ? <Text color="white"> Sale is Ended</Text> : ""}
 				</Box>
 			</Box>
 			{/* <-------------BANNER BACKGROUND ENDS----------------> */}
@@ -166,7 +333,7 @@ const ProjPageComp = () => {
 							maxWidth="50rem"
 							fontWeight="thin"
 						>
-							{metaData.collectionDetails.teamDescription}
+							{metaData?.collectionDetails?.teamDescription}
 						</Text>
 					</Box>
 					<Box ml="8rem">
