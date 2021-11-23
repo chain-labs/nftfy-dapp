@@ -11,7 +11,6 @@ export interface IEthers {
 
 const getEthers = (): Promise<IEthers> =>
   new Promise((resolve, reject) => {
-	console.log("getEthers started");
     try {
       try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
