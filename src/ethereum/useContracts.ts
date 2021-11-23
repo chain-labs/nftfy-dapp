@@ -22,8 +22,7 @@ const useContract = (contractName: string, provider: ProviderProps): any => {
   useEffect(() => {
     if (providers.Provider.isProvider(provider)) {
       try {
-        getContractDetails(contractName, provider)
-        .then(({address, abi}) => {
+        getContractDetails(contractName, provider).then(({ address, abi }) => {
           setContract(new ethers.Contract(address, abi, provider));
         });
       } catch (error) {
