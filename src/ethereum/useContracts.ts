@@ -6,7 +6,7 @@ import { ProviderProps } from "./types";
 export const getContractDetails = (contractName, provider) => {
   if (provider?.provider) {
     const network = contracts[provider.provider.networkVersion];
-    console.log(network);
+    console.log(network, provider.provider.networkVersion, provider.provider);
     const contractDetails =
       network[Object.keys(network)[0]].contracts[contractName];
     console.log(contractDetails)
