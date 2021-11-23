@@ -1,1 +1,1 @@
-export const ETH_REQUEST_ACCOUNT = 'eth_requestAccounts';
+export const ETH_REQUEST_ACCOUNT = "eth_requestAccounts";

@@ -1,18 +1,17 @@
-import { useState, useEffect } from 'react';
-import { ProviderProps, SignerProps, UseSignerResult } from './types';
+import { useState, useEffect } from "react";
+import { ProviderProps, SignerProps, UseSignerResult } from "./types";
 
 const useSigner = (provider: ProviderProps): UseSignerResult => {
-	const [signer, setSigner] = useState<SignerProps>(null);
+  const [signer, setSigner] = useState<SignerProps>(null);
 
-	useEffect(() => {
+  useEffect(() => {
+	console.log("useSigner started", provider);
+    if (provider?.provider) {
+      setSigner(provider?.getSigner());
+    }
+  }, [provider]);
 
-		console.log("useSigner started", provider);
-		if (provider?.provider) {
-			setSigner(provider?.getSigner());
-		}
-	}, [provider]);
-
-	return [signer, setSigner];
+  return [signer, setSigner];
 };
 
 export default useSigner;
