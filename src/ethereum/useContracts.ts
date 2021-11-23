@@ -19,7 +19,6 @@ export const getContractDetails = (contractName, provider) => {
 
 const useContract = (contractName: string, provider: ProviderProps): any => {
   const [contract, setContract] = useState(null);
-
   useEffect(() => {
     if (providers.Provider.isProvider(provider)) {
       try {
