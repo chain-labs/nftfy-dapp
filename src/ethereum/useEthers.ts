@@ -29,7 +29,7 @@ const useEthers = (): UseEthersResult => {
       try {
         await requestAccount();
       } catch (e) {
-        console.log(e);
+        console.log("Error at useEthers:", e);
       }
     }
   };

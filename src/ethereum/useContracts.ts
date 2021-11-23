@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import contracts from "../contracts/contracts.json";
 import { ProviderProps } from "./types";
 
-export const getContractDetails = (contractName, provider) => {
+export const getContractDetails = async (contractName, provider) => {
   if (provider?.provider) {
-    const network = contracts[provider.provider.networkVersion];
+    const network = contracts[(await provider.getNetwork()).chainId.toString()];
     const contractDetails =
       network[Object.keys(network)[0]].contracts[contractName];
     return { address: contractDetails.address, abi: contractDetails.abi };
@@ -22,11 +22,12 @@ const useContract = (contractName: string, provider: ProviderProps): any => {
   useEffect(() => {
     if (providers.Provider.isProvider(provider)) {
       try {
-        const { address, abi } = getContractDetails(contractName, provider);
-        setContract(new ethers.Contract(address, abi, provider));
+        getContractDetails(contractName, provider).then(({ address, abi }) => {
+          setContract(new ethers.Contract(address, abi, provider));
+        });
       } catch (error) {
         setContract(undefined);
-        console.log(error);
+        console.log("Error at useContract", error);
         return error.message;
       }
     }

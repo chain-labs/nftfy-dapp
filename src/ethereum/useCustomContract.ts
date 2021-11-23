@@ -10,7 +10,7 @@ const useCustomContract = (
 ): any => {
   const [contract, setContract] = useState(null);
 
-  const getContractDetails = (contractName, provider) => {
+  const getContractDetails = (contractName) => {
     const network = contracts["4"];
     const contractDetails =
       network[Object.keys(network)[0]].contracts[contractName];
@@ -20,11 +20,11 @@ const useCustomContract = (
   useEffect(() => {
     if (providers.Provider.isProvider(provider)) {
       try {
-        const abi = getContractDetails(contractName, provider);
+        const abi = getContractDetails(contractName);
         setContract(new ethers.Contract(contractAddress, abi, provider));
       } catch (error) {
         setContract(undefined);
-        console.log(error);
+        console.log("Error at useCustomContract", error);
         return error.message;
       }
     }
