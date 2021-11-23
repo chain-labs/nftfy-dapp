@@ -13,6 +13,7 @@ const useCustomContract = (contractName: string, contractAddress: string, provid
 	};
 
 	useEffect(() => {
+		console.log("UseCustomContract started", contractName, contractAddress, provider);
 		if (providers.Provider.isProvider(provider)) {
 			try {
 				const abi = getContractDetails(contractName, provider);
