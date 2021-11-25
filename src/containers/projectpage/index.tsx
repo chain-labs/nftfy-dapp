@@ -2,91 +2,116 @@ import axios from "axios";
 import Box from "src/components/Box";
 import Image from "next/image";
 import Text from "src/components/Text";
+import { format } from "date-fns";
 import { useContext, useEffect, useState } from "react";
-import { BigNumber } from "ethers";
-import { formatUnits } from "@ethersproject/units";
+import { BigNumber, ethers } from "ethers";
 import useCustomContract from "src/ethereum/useCustomContract";
 import { StatesContext } from "src/components/StatesContext";
 import If from "src/components/If";
+import theme from "src/styleguide/theme";
+const data = require("src/json/metadata.json");
+
+const statusList = {
+  PRESALE_NEXT: "PRESALE_NEXT",
+  PRESALE_ACTIVE: "PRESALE_ACTIVE",
+  PUBLIC_SALE_NEXT: "PUBLIC_SALE_NEXT",
+  PUBLIC_SALE_ACTIVE: "PUBLIC_SALE_ACTIVE",
+  SOLDOUT: "SOLDOUT",
+};
 
 const ProjPageComp = ({ cid }) => {
-  const data = require("src/json/metadata.json");
-  const [noOfTokens, setNoOfTokens] = useState<Number>();
+  const [noOfTokens, setNoOfTokens] = useState(0);
   const [metaData, setMetaData] = useState<any>();
+  const [status, setStatus] = useState("");
   const [cId, setCId] = useState<String>();
-  const [price, setPrice] = useState<Number>();
+  const [price, setPrice] = useState("0");
   const state = useContext(StatesContext);
   const [contractInfo, setContractInfo] = useState<any>();
   const [isPresaleBuyButtonActive, setIsPresaleBuyButtonActive] =
     useState<boolean>(false);
   const [isPublicSaleBuyButtonActive, setIsPublicSaleBuyButtonActive] =
     useState<boolean>(false);
-  const [presaleStartTime, setPreSaleStartTime] = useState<Date>();
   const [presaleTimerActive, setpresaleTimerActive] = useState<boolean>(false);
-  const [publicSaleStartTime, setPublicSaleStartTime] = useState<Date>();
-  const [publicSaleTimerActive, setPublicSaleTimerActive] =
-    useState<boolean>(false);
+
   const [isSaleEnded, setIsSaleEnded] = useState<boolean>(false);
   const Collection = useCustomContract("Collection", cid, state.provider);
-  const fetchMetadata = async () => {
-    if (cId) {
-      const res = await axios.get(`https://nftfy.mypinata.cloud/ipfs/${cId}`);
-      console.log(res);
-      setMetaData(res.data);
-    }
-  };
+
   const buyNft = async () => {
-    console.log(noOfTokens);
-    const bigNo = BigNumber.from(metaData?.tokenDetails.basic.price).mul(
+    const prices = {
+      PRESALE_ACTIVE: metaData?.tokenDetails?.presale?.presalePrice,
+      PUBLIC_SALE_ACTIVE: metaData?.tokenDetails?.basic?.price,
+    };
+
+    const buyFunctionName = {
+      PRESALE_ACTIVE: "presaleBuy(uint256)",
+      PUBLIC_SALE_ACTIVE: "buy(uint256)",
+    };
+
+    const bigNo = BigNumber.from(prices[status]).mul(
       BigNumber.from(noOfTokens)
     );
+
     console.log(
-      BigNumber.from(metaData?.tokenDetails.basic.price)
-        .mul(BigNumber.from(noOfTokens))
-        .toString()
+      BigNumber.from(prices[status]).mul(BigNumber.from(noOfTokens)).toString()
     );
-    const ethNo = formatUnits(bigNo, 18);
-    setPrice(parseFloat(ethNo));
-    if (isPresaleBuyButtonActive)
-      Collection.connect(state.signer)["presaleBuy(uint256)"](noOfTokens, {
-        value: bigNo,
-      });
-    if (isPublicSaleBuyButtonActive)
-      Collection.connect(state.signer)["buy(uint256)"](noOfTokens, {
-        value: bigNo,
-      });
+    Collection.connect(state.signer)[buyFunctionName[status]](noOfTokens, {
+      value: bigNo,
+    });
   };
+
+  useEffect(() => {
+    if (metaData) {
+      const now = parseInt((Date.now() / 1000).toString());
+      const presaleStartTime =
+        metaData?.tokenDetails?.presale?.presaleStartTime;
+      const publicSaleStartTime =
+        metaData?.tokenDetails?.basic?.publicSaleStartTime;
+
+      if (now < presaleStartTime) {
+        setStatus(statusList.PRESALE_NEXT);
+      } else if (now > presaleStartTime && now < publicSaleStartTime) {
+        setStatus(statusList.PRESALE_ACTIVE);
+      } else if (now > publicSaleStartTime) {
+        setStatus(statusList.PUBLIC_SALE_ACTIVE);
+      }
+    }
+  }, [metaData, setStatus]);
 
   useEffect(() => {
     console.log(cid);
   }, [cid]);
+
   useEffect(() => {
     const getContractInfo = async () => {
-      const cid = await Collection.callStatic.metadata();
-      const isPresaleAllowed = await Collection.callStatic.isPresaleAllowed();
-      const presaleStartTime = await Collection.callStatic.presaleStartTime();
-      const isPresaleActive = await Collection.callStatic.isPresaleActive();
-      const publicSaleStartTime =
-        await Collection.callStatic.publicSaleStartTime();
-      const isSaleActive = await Collection.callStatic.isSaleActive();
-      const tokensCount = await Collection.callStatic.tokensCount();
-      const startingTokenIndex =
-        await Collection.callStatic.startingTokenIndex();
-      const maximumTokens = await Collection.callStatic.maximumTokens();
-      const currentTime = Date.now();
-      setContractInfo({
-        isPresaleAllowed: isPresaleAllowed,
-        presaleStartTime: presaleStartTime * 1000,
-        isPresaleActive: isPresaleActive,
-        publicSaleStartTime: publicSaleStartTime * 1000,
-        isSaleActive: isSaleActive,
-        tokensCount: tokensCount,
-        startingTokenIndex: startingTokenIndex,
-        maximumTokens: maximumTokens,
-        currentTime: currentTime,
-      });
-      console.log(cid);
-      setCId(cid);
+      try {
+        const cid = await Collection.callStatic.metadata();
+        const isPresaleAllowed = await Collection.callStatic.isPresaleAllowed();
+        const presaleStartTime = await Collection.callStatic.presaleStartTime();
+        const isPresaleActive = await Collection.callStatic.isPresaleActive();
+        const publicSaleStartTime =
+          await Collection.callStatic.publicSaleStartTime();
+        const isSaleActive = await Collection.callStatic.isSaleActive();
+        const tokensCount = await Collection.callStatic.tokensCount();
+        const startingTokenIndex =
+          await Collection.callStatic.startingTokenIndex();
+        const maximumTokens = await Collection.callStatic.maximumTokens();
+        const currentTime = Date.now();
+        setContractInfo({
+          isPresaleAllowed: isPresaleAllowed,
+          presaleStartTime: presaleStartTime * 1000,
+          isPresaleActive: isPresaleActive,
+          publicSaleStartTime: publicSaleStartTime * 1000,
+          isSaleActive: isSaleActive,
+          tokensCount: ethers.utils.formatUnits(tokensCount, 0),
+          startingTokenIndex: ethers.utils.formatUnits(startingTokenIndex, 0),
+          maximumTokens: ethers.utils.formatUnits(maximumTokens, 0),
+          currentTime: currentTime,
+        });
+        console.log(cid);
+        setCId(cid);
+      } catch (e) {
+        console.log(e);
+      }
     };
     if (Collection) {
       getContractInfo();
@@ -94,43 +119,85 @@ const ProjPageComp = ({ cid }) => {
   }, [Collection]);
 
   useEffect(() => {
-    fetchMetadata();
+    const fetchMetadata = async () => {
+      if (cId) {
+        const res = await axios.get(`https://nftfy.mypinata.cloud/ipfs/${cId}`);
+        console.log(res);
+        setMetaData(res.data);
+      }
+    };
+
+    if (cId) {
+      fetchMetadata();
+    }
   }, [cId]);
 
   useEffect(() => {
-    console.log(contractInfo?.presaleStartTime);
-    if (
-      contractInfo?.isPresaleAllowed &&
-      contractInfo?.currentTime < contractInfo?.presaleStartTime
-    ) {
-      setpresaleTimerActive(true);
-      setPreSaleStartTime(contractInfo.presaleStartTime);
-    }
-    if (contractInfo?.isPresaleAllowed && contractInfo?.isPresaleActive) {
-      setpresaleTimerActive(false);
-      setIsPresaleBuyButtonActive(true);
-    }
-    if (contractInfo?.isPresaleActive) setIsPresaleBuyButtonActive(false);
-    if (
-      !presaleTimerActive &&
-      !isPresaleBuyButtonActive &&
-      contractInfo?.currentTime < contractInfo?.publicSaleStartTime
-    ) {
-      setPublicSaleTimerActive(true);
-      setPublicSaleStartTime(contractInfo.publicSaleStartTime);
-    }
-    if (contractInfo?.isSaleActive) {
-      setPublicSaleTimerActive(false);
-      setIsPublicSaleBuyButtonActive(true);
-    }
-    if (
-      contractInfo?.tokensCount + contractInfo?.startingTokenIndex ==
-      contractInfo?.maximumTokens
-    ) {
-      setIsSaleEnded(true);
-      setIsPublicSaleBuyButtonActive(false);
+    console.log(contractInfo);
+    if (contractInfo) {
+      const {
+        isSaleActive,
+        isPresaleActive,
+        isPresaleAllowed,
+        presaleStartTime,
+        publicSaleStartTime,
+      } = contractInfo;
+
+      if (isPresaleActive) {
+        setStatus(statusList.PRESALE_ACTIVE);
+      } else if (isPresaleAllowed && presaleStartTime > Date.now()) {
+        setStatus(statusList.PRESALE_NEXT);
+      } else if (isSaleActive) {
+        setStatus(statusList.PUBLIC_SALE_ACTIVE);
+      } else if (!isPresaleActive && publicSaleStartTime > Date.now()) {
+        setStatus(statusList.PUBLIC_SALE_NEXT);
+      } else if (!isPresaleActive && !isSaleActive) {
+        setStatus(statusList.SOLDOUT);
+      }
     }
   }, [contractInfo]);
+
+  useEffect(() => {
+    if (
+      status === statusList.PRESALE_ACTIVE ||
+      status === statusList.PRESALE_NEXT
+    ) {
+      const presalePrice = metaData?.tokenDetails?.presale?.presalePrice;
+      const presalePriceInEth = ethers.utils.formatUnits(presalePrice ?? 0, 18);
+      const total = parseFloat(presalePriceInEth) * noOfTokens;
+      setPrice(total.toString());
+    }
+    if (
+      status === statusList.PUBLIC_SALE_ACTIVE ||
+      (status === statusList.PUBLIC_SALE_NEXT &&
+        status !== statusList.PRESALE_ACTIVE)
+    ) {
+      const publicSalePrice = metaData?.tokenDetails?.basic?.price;
+      const publicSalePriceInEth = ethers.utils.formatUnits(
+        publicSalePrice ?? 0,
+        18
+      );
+      const total = parseFloat(publicSalePriceInEth) * noOfTokens;
+      setPrice(total.toString());
+    }
+  }, [
+    noOfTokens,
+    isPresaleBuyButtonActive,
+    isPublicSaleBuyButtonActive,
+    metaData,
+    status,
+  ]);
+
+  const getTime = (presaleTime) => {
+    const start = new Date(presaleTime.toString());
+    console.log({ start });
+
+    const time = format(new Date(presaleTime), "dd MMM yyyy | HH:mm:ss");
+
+    return time;
+  };
+
+  if (!metaData) return <div>Loading...</div>;
 
   return (
     <Box>
@@ -138,7 +205,8 @@ const ProjPageComp = ({ cid }) => {
       <Box width="100vw" height="100vh" top={{ mobS: 0, tabS: -10 }}>
         <Box
           as="img"
-          src={data.collectionDetails.bannerImageUrl}
+          src={metaData?.collectionDetails?.bannerImageUrl}
+          alt={data?.collectionDetails?.bannerImageUrl}
           height="100vh"
           width="100vw"
           position="relative"
@@ -198,119 +266,138 @@ const ProjPageComp = ({ cid }) => {
           id="headline"
           color="white"
           fontSize={{ mobS: "3.6rem", tabS: "7.2rem" }}
+          textShadow="0 0 10px #000000"
           fontWeight="extra-bold"
           mb="20rem"
           textTransform="uppercase"
           textAlign="center"
+          zIndex={3}
         >
           {metaData?.collectionDetails?.name}
         </Text>
-        <Box bg="purple-black" padding="mxl">
-          <Box center>
+        {/* Buy Box */}
+        <Box
+          bg={`${theme.colors["purple-black"]}b0`}
+          p="mxl"
+          borderRadius="4px"
+        >
+          <Box row alignItems="center" mb="2rem">
             <Box
               as="input"
               value={`${noOfTokens}`}
               type="number"
-              mb="mxxl"
+              borderRadius="4px"
+              border="none"
               mr="mxxl"
-              px="4.8rem"
+              px="1rem"
               py="1rem"
               onChange={(e) => setNoOfTokens(e.target.value)}
             ></Box>
-            {isPresaleBuyButtonActive ? (
-              <Box
-                bg="accent-green"
-                px="4.8rem"
-                py="2rem"
-                borderRadius="4px"
-                cursor="pointer"
-                className="cta-btn"
-                onClick={buyNft}
-                mr="mxxl"
+            <Box>
+              <Text
+                fontSize="2rem"
+                color="primary-white"
+                fontWeight="extra-bold"
               >
-                <Text fontSize="2rem" color="black-20" fontWeight="extra-bold">
-                  presale buy
-                </Text>
-              </Box>
-            ) : (
-              ""
-            )}
-            <If
-              condition={isPublicSaleBuyButtonActive}
-              then={
-                <Box
-                  bg="accent-green"
-                  px="4.8rem"
-                  py="2rem"
-                  borderRadius="4px"
-                  cursor="pointer"
-                  className="cta-btn"
-                  onClick={buyNft}
-                  mr="mxxl"
-                >
-                  <Text
-                    fontSize="2rem"
-                    color="black-20"
-                    fontWeight="extra-bold"
-                  >
-                    Public buy
-                  </Text>
-                </Box>
-              }
-            />
-            <If
-              condition={isPresaleBuyButtonActive}
-              then={
-                <Box
-                  bg="accent-green"
-                  px="4.8rem"
-                  py="2rem"
-                  borderRadius="4px"
-                  cursor="pointer"
-                  className="cta-btn"
-                  onClick={buyNft}
-                  mr="mxxl"
-                >
-                  <Text
-                    fontSize="2rem"
-                    color="black-20"
-                    fontWeight="extra-bold"
-                  >
-                    presale buy
-                  </Text>
-                </Box>
-              }
-            />
-            {price ? (
-              <Box bg="primary-blue" px="4.8rem" py="2rem" borderRadius="4px">
-                <Text fontSize="2rem" color="black-20" fontWeight="extra-bold">
-                  {price} ETH
-                </Text>
-              </Box>
-            ) : (
-              ""
-            )}
+                = {price} ETH
+              </Text>
+            </Box>
           </Box>
-          {presaleStartTime ? (
-            <Text color="white">
-              {" "}
-              Presale Starts At {new Date(presaleStartTime).toString()}
-            </Text>
-          ) : (
-            ""
-          )}
-          {publicSaleStartTime ? (
-            <Text color="white">
-              {" "}
-              Public Sale Starts At {new Date(publicSaleStartTime).toString()}
-            </Text>
-          ) : (
-            ""
-          )}
+          <Box row>
+            <If
+              condition={
+                status === statusList.PRESALE_NEXT ||
+                status === statusList.PRESALE_ACTIVE
+              }
+              then={
+                <Box
+                  bg="accent-green"
+                  px="2rem"
+                  py="0.4rem"
+                  borderRadius="4px"
+                  cursor="pointer"
+                  className="cta-btn"
+                  onClick={buyNft}
+                  as="button"
+                  disabled={status != statusList.PRESALE_ACTIVE}
+                >
+                  <Text fontSize="1.6rem" color="black-20" fontWeight="bold">
+                    Presale Buy
+                  </Text>
+                </Box>
+              }
+            />
+            <If
+              condition={
+                status === statusList.PUBLIC_SALE_NEXT ||
+                status === statusList.PUBLIC_SALE_ACTIVE
+              }
+              then={
+                <Box
+                  bg="accent-green"
+                  px="2rem"
+                  py="0.4rem"
+                  borderRadius="4px"
+                  cursor="pointer"
+                  className="cta-btn"
+                  onClick={buyNft}
+                  as="button"
+                  disabled={!!(status != statusList.PUBLIC_SALE_ACTIVE)}
+                >
+                  <Text fontSize="1.6rem" color="black-20" fontWeight="bold">
+                    Buy
+                  </Text>
+                </Box>
+              }
+            />
+            <Box
+              bg={`${theme.colors["primary-red"]}30`}
+              border="1px solid white"
+              borderRadius="4px"
+              px="1rem"
+              py="1rem"
+              ml="4rem"
+              display={
+                status === statusList.PUBLIC_SALE_ACTIVE ? "none" : "block"
+              }
+            >
+              <If
+                condition={status === statusList.PRESALE_NEXT}
+                then={
+                  <Text
+                    fontSize="1.2rem"
+                    color="primary-white"
+                    fontWeight="medium"
+                    maxWidth="20rem"
+                  >
+                    Presale starts at
+                    <br /> {`${getTime(contractInfo?.presaleStartTime)}`}
+                  </Text>
+                }
+              />
+              <If
+                condition={
+                  status === statusList.PRESALE_ACTIVE ||
+                  status === statusList.PUBLIC_SALE_NEXT
+                }
+                then={
+                  <Text
+                    fontSize="1.2rem"
+                    color="primary-white"
+                    fontWeight="medium"
+                    maxWidth="20rem"
+                  >
+                    Sale starts at
+                    <br /> {`${getTime(contractInfo?.publicSaleStartTime)}`}
+                  </Text>
+                }
+              />
+            </Box>
+          </Box>
           {isSaleEnded ? <Text color="white"> Sale is Ended</Text> : ""}
         </Box>
       </Box>
-      {/* <-------------BANNER BACKGROUND ENDS----------------> */}
+      {/* <-------------BANNER BACKGROUND ENDS--------------------> */}
 
       {/* <------------- WEBSITE BODY STARTS HERE ----------------> */}
       <Box color="white" className="body" bg="purple-black">
