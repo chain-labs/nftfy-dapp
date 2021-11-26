@@ -48,6 +48,24 @@ const PaymentSplit = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPercent(parseFloat(e.target.value));
   };
+
+  const removePayee = (index) => {
+    const share = paymentSplit?.shares[index];
+    setMaxShare(maxShare + parseInt(share));
+    const newPayees = [...paymentSplit?.payees];
+    newPayees.splice(index, 1);
+    const newShares = [...paymentSplit?.shares];
+    newShares.splice(index, 1);
+    const newPaymentSplit = {
+      payees: newPayees,
+      shares: newShares,
+      nftify: paymentSplit?.nftify,
+      nftifyShares: paymentSplit?.nftifyShares,
+    };
+
+    setPaymentSplit(newPaymentSplit);
+    console.log(newPaymentSplit, index, share);
+  };
   return (
     <React.Fragment>
       <Text color="grey" fontSize="1.6rem" mb="3.2rem">
@@ -60,11 +78,23 @@ const PaymentSplit = ({
         <Text fontSize="1.6rem">15%</Text>
       </Box>
       {paymentSplit?.payees?.map((payee, index) => (
-        <Box key={index} row mb="2rem">
+        <Box key={index} row mb="2rem" alignItems="center">
           <Text fontSize="1.6rem" mr="1.2rem">
             {payee}:
           </Text>
           <Text fontSize="1.6rem">{paymentSplit?.shares[index]}%</Text>
+          <Box
+            as="button"
+            bg="white"
+            border="none"
+            onClick={() => removePayee(index)}
+            color="primary-red"
+            fontSize="1.2rem"
+            ml="4rem"
+            cursor="pointer"
+          >
+            Remove
+          </Box>
         </Box>
       ))}
       <Text

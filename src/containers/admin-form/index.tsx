@@ -53,6 +53,7 @@ const HomeComp = () => {
   const [tokenName, setTokenName] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
   const [adminAddress, setAdminAddress] = useState("");
+  const [userAddress, setUserAddress] = useState("");
   const [maximumTokens, setMaximumTokens] = useState("");
   const [maxPurchase, setMaxPurchase] = useState("");
   const [maxHolding, setMaxHolding] = useState("");
@@ -115,6 +116,16 @@ const HomeComp = () => {
       setIsCreated(true);
     }
   }, [contractAddress]);
+
+  useEffect(() => {
+    const getAdmin = async () => {
+      const admin = await state?.signer?.getAddress();
+      setUserAddress(admin);
+    };
+    if (state.signer) {
+      getAdmin();
+    }
+  }, [state.signer]);
 
   const handleCreate = async () => {
     setIsLoading(true);
@@ -214,6 +225,16 @@ const HomeComp = () => {
 
     setSelectInput(newSocial[0]);
     setSocial(newSocial);
+  };
+
+  const removeWhitelist = (index) => {
+    const newWhitelist = [...presaleWhitelistAll];
+    newWhitelist.splice(index, 1);
+    setPresaleWhitelistAll(newWhitelist);
+  };
+
+  const makeAdmin = () => {
+    setAdminAddress(userAddress);
   };
 
   // const upload = async (e) => {
@@ -391,11 +412,26 @@ const HomeComp = () => {
           set={setTokenSymbol}
           data={tokenSymbol}
         />
-        <LabelledInput
-          label="Admin Wallet Address"
-          set={setAdminAddress}
-          data={adminAddress}
-        />
+        <Box row alignItems="center">
+          <LabelledInput
+            label="Admin Wallet Address"
+            set={setAdminAddress}
+            data={adminAddress}
+          />
+          <Box
+            as="button"
+            border="1px solid black"
+            borderRadius="4px"
+            onClick={makeAdmin}
+            bg="accent-green"
+            px="2rem"
+            py="1rem"
+            ml="2rem"
+            cursor="pointer"
+          >
+            Make me Admin
+          </Box>
+        </Box>
         <LabelledInput
           label="Maximum Tokens in Collection"
           set={setMaximumTokens}
@@ -478,9 +514,21 @@ const HomeComp = () => {
             + Add
           </Box>
         </Box>
-        {presaleWhitelistAll.map((w) => (
+        {presaleWhitelistAll.map((w, i) => (
           <Box key={w} fontSize="1.2rem" mb="0.8rem">
             {w}✅
+            <Box
+              as="button"
+              bg="white"
+              border="none"
+              onClick={() => removeWhitelist(i)}
+              color="primary-red"
+              fontSize="1.2rem"
+              ml="4rem"
+              cursor="pointer"
+            >
+              Remove
+            </Box>
           </Box>
         ))}
         <Divider />
