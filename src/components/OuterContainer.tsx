@@ -1,4 +1,4 @@
-import Box from 'components/Box';
+import Box from "components/Box";
 // import Navbar from 'components/Navbar';
 // import Footer from './Footer';
 
@@ -11,5 +11,4 @@ import Box from 'components/Box';
 // 		</Box>
 // 	);
 // };
-
 // export default OuterContainer;

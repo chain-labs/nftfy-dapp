@@ -1,0 +1,74 @@
+{
+  "collectionDetails": {
+    "name": "Spaceman Astro Club",
+    "symbol": "SMAC",
+    "smallDescription": "50 words description",
+    "bigDescription": "250 words description",
+    "teamDescription": "250 words ",
+    "valueProposition": "250 wrods",
+    "roadmap": [
+      {
+        "title": "Smart Contract Deployment",
+        "quarter": "Q4 2021",
+        "description": "100 Words"
+      }
+    ],
+    "team": [
+      {
+        "name": "Kartik",
+        "position": "Charcter Design",
+        "description": "jvndfjb",
+        "socialLinks": [
+          {
+            "socialMedia": "Twitter",
+            "url": "https://twitter.v dfj"
+          }
+        ]
+      }
+    ],
+    "logoUrl": "https://",
+    "bannerImageUrl": "https://",
+    "contactEmail": "kartik@smac.io",
+    "socialLinks": [
+      {
+        "socialMedia": "discor",
+        "url": ""
+      }
+    ],
+    "collectionUrl": "https://smac.io"
+  },
+  "tokenDetails": {
+    "basic": {
+      "name": "Spaceman Astro Club",
+      "symbol": "SMAC",
+      "admin": "0xjhdbfv",
+      "maximumTokens": "10000",
+      "maxPurchase": "3",
+      "maxHolding": "5",
+      "price": "parseUnits('0.08', 18)",
+      "publicSaleStartTime": "seconds",
+      "loadingURI": "htpps://"
+    },
+    "presale": {
+      "presalePrice": "",
+      "presaleStartTime": "",
+      "presaleReservedTokens": "",
+      "presaleMaxHolding": "",
+      "presaleWhitelist": ["", ""]
+    },
+    "paymentSplitter": {
+      "payees": [""],
+      "shares": [""],
+      "nftify": "",
+      "nftifyShares": "parseUnits('15', 16)"
+    },
+    "revealable": {
+      "revealAfterTimestamp": "",
+      "projectURIProvenance": ""
+    },
+    "reservable": {
+      "tokensToBeReserved": "",
+      "receiver": ""
+    }
+  }
+}
