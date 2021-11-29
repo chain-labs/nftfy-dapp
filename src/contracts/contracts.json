@@ -5,7 +5,7 @@
       "chainId": "4",
       "contracts": {
         "Collection": {
-          "address": "0x7DcDe04d970833d6a7fcfE201Af633d7329D4464",
+          "address": "0x19eE3dE15e73f23B76455a5428bF98bB77c62721",
           "abi": [
             {
               "anonymous": false,
@@ -55,6 +55,25 @@
                 }
               ],
               "name": "ApprovalForAll",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "previousOwner",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "newOwner",
+                  "type": "address"
+                }
+              ],
+              "name": "OwnershipTransferred",
               "type": "event"
             },
             {
@@ -223,19 +242,6 @@
               "name": "addWhitelist",
               "outputs": [],
               "stateMutability": "nonpayable",
-              "type": "function"
-            },
-            {
-              "inputs": [],
-              "name": "admin",
-              "outputs": [
-                {
-                  "internalType": "address",
-                  "name": "",
-                  "type": "address"
-                }
-              ],
-              "stateMutability": "view",
               "type": "function"
             },
             {
@@ -559,6 +565,19 @@
               "type": "function"
             },
             {
+              "inputs": [],
+              "name": "owner",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
               "inputs": [
                 {
                   "internalType": "uint256",
@@ -842,6 +861,13 @@
                 }
               ],
               "name": "removeWhitelist",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "renounceOwnership",
               "outputs": [],
               "stateMutability": "nonpayable",
               "type": "function"
@@ -1349,19 +1375,6 @@
               "inputs": [
                 {
                   "internalType": "address",
-                  "name": "_newAdmin",
-                  "type": "address"
-                }
-              ],
-              "name": "transferAdminRights",
-              "outputs": [],
-              "stateMutability": "nonpayable",
-              "type": "function"
-            },
-            {
-              "inputs": [
-                {
-                  "internalType": "address",
                   "name": "from",
                   "type": "address"
                 },
@@ -1377,6 +1390,19 @@
                 }
               ],
               "name": "transferFrom",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "newOwner",
+                  "type": "address"
+                }
+              ],
+              "name": "transferOwnership",
               "outputs": [],
               "stateMutability": "nonpayable",
               "type": "function"
@@ -1417,7 +1443,7 @@
           ]
         },
         "CollectionFactory": {
-          "address": "0xb0000ab4A5a57273760e0D6f9D913B0BCbc481Cf",
+          "address": "0x80f2c62CBa75C0E945B15b74C526F263C69Ce6Cb",
           "abi": [
             {
               "inputs": [
