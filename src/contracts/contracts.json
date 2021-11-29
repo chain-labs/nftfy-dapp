@@ -5,7 +5,7 @@
       "chainId": "4",
       "contracts": {
         "Collection": {
-          "address": "0xa161B5575b43373a3e9d648b9A85feEFcF0F2661",
+          "address": "0x7DcDe04d970833d6a7fcfE201Af633d7329D4464",
           "abi": [
             {
               "anonymous": false,
@@ -654,19 +654,6 @@
                   "internalType": "uint256",
                   "name": "",
                   "type": "uint256"
-                }
-              ],
-              "stateMutability": "view",
-              "type": "function"
-            },
-            {
-              "inputs": [],
-              "name": "presaleActive",
-              "outputs": [
-                {
-                  "internalType": "bool",
-                  "name": "",
-                  "type": "bool"
                 }
               ],
               "stateMutability": "view",
@@ -1430,7 +1417,7 @@
           ]
         },
         "CollectionFactory": {
-          "address": "0x428b7e35cfC91B116DA11431C8E635A4A1D69741",
+          "address": "0xb0000ab4A5a57273760e0D6f9D913B0BCbc481Cf",
           "abi": [
             {
               "inputs": [
