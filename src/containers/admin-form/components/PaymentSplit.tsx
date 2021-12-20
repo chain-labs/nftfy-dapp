@@ -21,7 +21,7 @@ const PaymentSplit = ({
 }) => {
   const [percent, setPercent] = useState(0);
   const [payee, setPayee] = useState("");
-  const [maxShare, setMaxShare] = useState(85);
+  const [maxShare, setMaxShare] = useState(90);
   const [showAdd, setShowAdd] = useState(false);
 
   useEffect(() => {
@@ -75,7 +75,7 @@ const PaymentSplit = ({
         <Text fontSize="1.6rem" mr="1.2rem">
           NFTfy:
         </Text>
-        <Text fontSize="1.6rem">15%</Text>
+        <Text fontSize="1.6rem">10%</Text>
       </Box>
       {paymentSplit?.payees?.map((payee, index) => (
         <Box key={index} row mb="2rem" alignItems="center">
