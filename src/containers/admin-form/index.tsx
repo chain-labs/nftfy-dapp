@@ -72,7 +72,7 @@ const HomeComp = () => {
     payees: [],
     shares: [],
     nftify: "0xd18Cd50a6bDa288d331e3956BAC496AAbCa4960d",
-    nftifyShares: ethers.utils.parseUnits("15", 16),
+    nftifyShares: ethers.utils.parseUnits("10", 16),
   });
 
   const [revealTime, setRevealTime] = useState("");
@@ -89,12 +89,12 @@ const HomeComp = () => {
 
   const state = useContext(StatesContext);
 
-  const CollectionFactory = useContract("CollectionFactory", state.provider);
+  const CollectionFactory = useContract("CollectionFactoryV2", state.provider);
 
   useEffect(() => {
     const getContractInfo = async () => {
-      const nftfyAddress = await CollectionFactory.callStatic.nftify();
-      const nftfySharesBN = await CollectionFactory.callStatic.nftifyShares();
+      const nftfyAddress = await CollectionFactory.callStatic.simplr();
+      const nftfySharesBN = await CollectionFactory.callStatic.simplrShares();
       const nftfyShares = ethers.utils.formatUnits(nftfySharesBN, 16);
       const upfrontFee = await CollectionFactory.callStatic.upfrontFee();
       const upfrontFeeInETH = ethers.utils.formatUnits(upfrontFee, 18);
@@ -111,7 +111,7 @@ const HomeComp = () => {
   // };
 
   useEffect(() => {
-    if (contractAddress.length > 0) {
+    if (contractAddress?.length > 0) {
       // console.log({ contractAddress });
       setIsCreated(true);
     }
@@ -172,8 +172,8 @@ const HomeComp = () => {
         paymentSplitter: {
           payees: paymentSplit.payees,
           shares: shares,
-          nftify: paymentSplit.nftify,
-          nftifyShares: paymentSplit.nftifyShares,
+          simplr: paymentSplit.nftify,
+          simplrShares: paymentSplit.nftifyShares,
         },
         revealable: {
           revealAfterTimestamp: revealTime,
@@ -198,19 +198,21 @@ const HomeComp = () => {
     );
     const transaction = await CollectionFactory.connect(
       state.signer
-    ).createProject(
+    ).createCollection(
+      2,
       jsonBody.tokenDetails.basic, // _basicCollection
       jsonBody.tokenDetails.presale, // _presaleable
       jsonBody.tokenDetails.paymentSplitter, // _paymentSplitter
       jsonBody.tokenDetails.revealable, // _revealable
       res.data.IpfsHash, // _metadata
+      true,
       { value: upfrontFee.toString() }
     );
     const event = (await transaction.wait())?.events?.filter(
       (event) => event.event == "CollectionCreated"
     )[0]?.args;
     setMetadataCID(res.data.IpfsHash);
-    setContractAddress(event?.project);
+    setContractAddress(event?.collection);
 
     // console.log({ jsonBody, res, event });
   };
